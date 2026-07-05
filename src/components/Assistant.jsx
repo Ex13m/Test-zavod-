@@ -3,12 +3,22 @@ import { useStore } from '../store'
 import { useShopItems } from './useShopData'
 import { APP_VERSION, APP_DATE, VERSION_HISTORY, PDF_GUIDES } from '../version'
 import Icon from './Icons'
+import { ART } from '../art'
+import SmartImg from './SmartImg'
 
 // Капитан Окунь: растровый маскот из Higgsfield (Nano Banana),
 // тёмный фон растворяется через mix-blend-mode; при недоступности
 // арта — рисованный SVG-фолбэк ниже.
 export function Captain({ size = 84 }) {
-  return <CaptainSvg size={size} />
+  return (
+    <SmartImg
+      srcs={ART.captain}
+      alt="Капитан Окунь"
+      className="captain art-blend"
+      style={{ width: size, height: size, objectFit: 'contain' }}
+      fallback={<CaptainSvg size={size} />}
+    />
+  )
 }
 
 function CaptainSvg({ size = 84 }) {

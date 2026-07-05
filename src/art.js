@@ -13,6 +13,12 @@ export const ART = {
     CDN + 'hf_20260705_225018_0c6de9c3-4357-4898-8bd3-27590069e07b.png', // Blackwater Lake
     CDN + 'hf_20260705_225018_39442f91-828d-4e9e-8e77-48b3aee06aeb.png', // Old Mill Pond
   ],
+  // Капитан Окунь — премиальный рендер (Nano Banana); тёмный фон
+  // растворяется на тёмной теме через mix-blend-mode: lighten
+  captain: [
+    '/art/captain.png',
+    CDN + 'hf_20260705_211247_a7d5cdf3-acd4-43bb-a50a-495c742c5324.png',
+  ],
   // светящаяся приманка — декор (GPT Image 2)
   lure: [
     '/art/lure-glow.png',
