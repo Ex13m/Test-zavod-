@@ -90,8 +90,13 @@ function em(list, style, rnd) {
   return rnd() < style.emojiDensity ? pick(list, rnd) + ' ' : ''
 }
 
-function hashtags(c, style, rnd) {
+function hashtags(c, style, rnd, shopTags) {
   if (!style.hashtags) return ''
+  // теги магазина (из анализа сайта) приоритетнее общих
+  if (shopTags?.length) {
+    const n = Math.min(shopTags.length, 3 + Math.floor(rnd() * 3))
+    return '\n\n' + [...shopTags].sort(() => rnd() - 0.5).slice(0, n).join(' ')
+  }
   const base = ['#рыбалка', `#${c.type.id === 'balancer' ? 'зимняярыбалка' : 'спиннинг'}`, '#приманки']
   const extra = [`#${c.type.name.toLowerCase()}`, '#трофей', '#наловле', '#клюёт']
   const n = 3 + Math.floor(rnd() * 3)
@@ -178,7 +183,7 @@ export function generatePost(p) {
   }
   const cta = em(EMOJI.cta, style, rnd) + pick(CTAS, rnd)(ctx)
 
-  const text = [hook, ...body, cta].join('\n\n') + hashtags(ctx, style, rnd)
+  const text = [hook, ...body, cta].join('\n\n') + hashtags(ctx, style, rnd, p.settings?.shopTags)
 
   return {
     title: `${type.icon} ${type.name} «${p.lure.name}»`,
@@ -234,8 +239,9 @@ function generateFromPack(p, type, tone, rnd) {
 
   let text = [hook, ...body, cta].join('\n\n')
   if (style.hashtags) {
-    const n = 3 + Math.floor(rnd() * 2)
-    text += '\n\n' + [...pack.hashtags].sort(() => rnd() - 0.5).slice(0, n).join(' ')
+    const pool = p.settings?.shopTags?.length ? p.settings.shopTags : pack.hashtags
+    const n = Math.min(pool.length, 3 + Math.floor(rnd() * 2))
+    text += '\n\n' + [...pool].sort(() => rnd() - 0.5).slice(0, n).join(' ')
   }
 
   return {

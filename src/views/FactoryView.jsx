@@ -5,6 +5,7 @@ import { LANGS } from '../engine/i18n'
 import { LURE_TYPES } from '../engine/lureTypes'
 import { useImage } from '../components/useImage'
 import Icon from '../components/Icons'
+import { useShopItems } from '../components/useShopData'
 
 const STAGES = [
   { icon: 'camera', label: 'Приёмка фото' },
@@ -22,7 +23,8 @@ const LENGTHS = [
 ]
 
 export default function FactoryView() {
-  const { lures, settings, styleProfile, addPost, showToast, setView } = useStore()
+  const { settings, styleProfile, addPost, showToast, setView } = useStore()
+  const lures = useShopItems('lures')
   const factoryLureId = useStore((s) => s.factoryLureId)
   const [lureId, setLureId] = useState(factoryLureId || lures[0]?.id || '')
   const [framework, setFramework] = useState(settings.defaultFramework)
@@ -116,7 +118,7 @@ export default function FactoryView() {
                 <option value="">— выбрать со склада —</option>
                 {lures.map((l) => (
                   <option key={l.id} value={l.id}>
-                    {LURE_TYPES[l.type]?.icon} {l.name} · {LURE_TYPES[l.type]?.name}
+                    {l.name} · {LURE_TYPES[l.type]?.name}
                   </option>
                 ))}
               </select>
@@ -182,12 +184,12 @@ export default function FactoryView() {
 
             {styleProfile?.samples > 0 && (
               <div className="pill-note" style={{ marginBottom: 14 }}>
-                🧬 Стиль скопирован с {styleProfile.samples} скринов
+                <Icon name="fan" size={14} /> Стиль скопирован с {styleProfile.samples} скринов
               </div>
             )}
 
             <button className="btn primary" style={{ width: '100%' }} onClick={run} disabled={stage > -1 && stage < STAGES.length}>
-              {stage > -1 && stage < STAGES.length ? '⚙️ Конвейер работает…' : '🏭 Запустить конвейер'}
+              {stage > -1 && stage < STAGES.length ? <><Icon name="gear" size={16} /> Конвейер работает…</> : <><Icon name="factory" size={16} /> Запустить конвейер</>}
             </button>
           </div>
         </div>
@@ -238,12 +240,12 @@ export default function FactoryView() {
                 </div>
                 <div className="row mt-16">
                   <button className="btn primary" onClick={save} disabled={saved}>
-                    {saved ? '✓ В истории' : '📦 Сохранить в историю'}
+                    {saved ? <><Icon name="check" size={16} /> В истории</> : <><Icon name="cube" size={16} /> Сохранить в историю</>}
                   </button>
-                  <button className="btn" onClick={copy}>📋 Копировать</button>
-                  <button className="btn amber" onClick={run}>🎲 Пересобрать</button>
+                  <button className="btn" onClick={copy}><Icon name="copy" size={16} /> Копировать</button>
+                  <button className="btn amber" onClick={run}><Icon name="gear" size={16} /> Пересобрать</button>
                   {saved && (
-                    <button className="btn ghost" onClick={() => setView('distribution')}>📡 К дистрибуции →</button>
+                    <button className="btn ghost" onClick={() => setView('distribution')}><Icon name="tower" size={16} /> К дистрибуции →</button>
                   )}
                 </div>
               </>

@@ -4,6 +4,7 @@ import { fileToDataUrl } from '../engine/imageUtil'
 import { useImage } from '../components/useImage'
 import Dropzone from '../components/Dropzone'
 import Icon from '../components/Icons'
+import { useShopItems } from '../components/useShopData'
 
 function LureCard({ lure, onOpen }) {
   const src = useImage(lure.imgKey)
@@ -18,7 +19,7 @@ function LureCard({ lure, onOpen }) {
       >✕</button>
       <div className="lc-body">
         <div className="lc-name">{lure.name}</div>
-        <div className="lc-type">{LURE_TYPES[lure.type]?.icon} {LURE_TYPES[lure.type]?.name}</div>
+        <div className="lc-type">{LURE_TYPES[lure.type]?.name}</div>
         <select
           className="mt-16"
           style={{
@@ -30,7 +31,7 @@ function LureCard({ lure, onOpen }) {
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => updateLure(lure.id, { type: e.target.value })}
         >
-          {LURE_TYPE_LIST.map((t) => <option key={t.id} value={t.id}>{t.icon} {t.name}</option>)}
+          {LURE_TYPE_LIST.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
         </select>
       </div>
     </div>
@@ -38,7 +39,8 @@ function LureCard({ lure, onOpen }) {
 }
 
 export default function LuresView() {
-  const { lures, addLure, showToast, setView } = useStore()
+  const { addLure, showToast, setView } = useStore()
+  const lures = useShopItems('lures')
 
   const onFiles = async (files) => {
     for (const f of files) {

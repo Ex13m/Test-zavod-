@@ -4,6 +4,7 @@ import { FRAMEWORKS } from '../engine/generator'
 import { LURE_TYPES } from '../engine/lureTypes'
 import { useImage } from '../components/useImage'
 import Icon from '../components/Icons'
+import { useShopItems } from '../components/useShopData'
 
 function HistoryItem({ post, onCopy }) {
   const src = useImage(post.imgKey)
@@ -23,7 +24,7 @@ function HistoryItem({ post, onCopy }) {
           <span className="tag t-acc">{FRAMEWORKS[post.meta?.framework]?.name}</span>
           <span className="tag">{date}</span>
           <span className="tag">{post.meta?.chars} симв.</span>
-          {post.published?.map((ch) => <span key={ch} className="tag t-amber">🚀 {ch}</span>)}
+          {post.published?.map((ch) => <span key={ch} className="tag t-amber">↗ {ch}</span>)}
         </div>
       </div>
       <div className="hi-actions">
@@ -37,7 +38,8 @@ function HistoryItem({ post, onCopy }) {
 }
 
 export default function HistoryView() {
-  const { posts, showToast } = useStore()
+  const { showToast } = useStore()
+  const posts = useShopItems('posts')
   const [fw, setFw] = useState('all')
 
   const filtered = fw === 'all' ? posts : posts.filter((p) => p.meta?.framework === fw)

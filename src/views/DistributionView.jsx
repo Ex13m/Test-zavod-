@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { useStore, loadImage } from '../store'
 import { CHANNELS, WEBHOOK_PRESETS, publishToTelegram, publishToWebhook } from '../engine/distribution'
 import Icon from '../components/Icons'
+import { useShopItems } from '../components/useShopData'
 
 export default function DistributionView() {
-  const { posts, channels, toggleChannel, settings, setSettings, markPublished, showToast } = useStore()
+  const { channels, toggleChannel, settings, setSettings, markPublished, showToast } = useStore()
+  const posts = useShopItems('posts')
   const distPostId = useStore((s) => s.distPostId)
   const [postId, setPostId] = useState(distPostId || posts[0]?.id || '')
   const [busy, setBusy] = useState(false)
@@ -128,7 +130,7 @@ export default function DistributionView() {
               <label>Пост со склада</label>
               <select value={postId} onChange={(e) => setPostId(e.target.value)}>
                 <option value="">— выбрать пост —</option>
-                {posts.map((p) => <option key={p.id} value={p.id}>{p.title} · {new Date(p.createdAt).toLocaleDateString('ru-RU')}</option>)}
+                {posts.map((p) => <option key={p.id} value={p.id}>{p.title.replace(/^\S+\s/, '')} · {new Date(p.createdAt).toLocaleDateString('ru-RU')}</option>)}
               </select>
             </div>
             {post && (
@@ -138,7 +140,7 @@ export default function DistributionView() {
             )}
             <div className="row mt-16">
               <button className="btn primary" onClick={publish} disabled={busy || !post}>
-                {busy ? '⚙️ Раздаём…' : '📡 Разослать по включённым каналам'}
+                {busy ? <><Icon name="gear" size={16} /> Раздаём…</> : <><Icon name="tower" size={16} /> Разослать по включённым каналам</>}
               </button>
             </div>
             {log.length > 0 && (

@@ -5,37 +5,63 @@
 // слое — плавно покачивающиеся водоросли.
 // ============================================================
 
-// Силуэты рисованы вручную по анатомии видов (голова вправо).
+// Рыбы «Зигфелд»: ар-деко графика тем же штрихом, что и иконки —
+// веерные хвосты и плавники с лучами, дуги чешуи, жаберная линия,
+// кольцо глаза. Заливка полупрозрачная, контур читается.
+const S = { fill: 'currentColor', fillOpacity: 0.16, stroke: 'currentColor', strokeOpacity: 0.75, strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }
+const LINES = { fill: 'none', stroke: 'currentColor', strokeOpacity: 0.55, strokeWidth: 1.3, strokeLinecap: 'round' }
+
 const FISH = {
-  pike: ( // щука — стрела: вытянутое тело, «утиный» нос, плавники у хвоста
+  pike: ( // щука — стрела с «утиным» носом, плавники смещены к хвосту
     <g>
-      <path d="M214 45 C200 37 180 33 150 31 C110 28 70 30 40 36 L17 29 L26 45 L17 61 L40 54 C70 60 110 62 150 59 C180 57 200 53 214 45 Z" />
-      <path d="M62 33 C56 23 46 21 38 25 L50 35 Z" />
-      <path d="M62 57 C56 67 46 69 38 65 L50 55 Z" />
-      <path d="M112 59 L104 69 L120 62 Z" />
+      <path {...S} d="M228 50 C206 39 176 33 140 31 C102 29 64 33 40 43 L40 57 C64 67 102 71 140 69 C176 67 206 61 228 50 Z" />
+      <path {...S} d="M40 43 L13 25 Q4 50 13 75 L40 57 Z" />
+      <path {...LINES} d="M38 50 L12 33 M38 50 L9 50 M38 50 L12 67" />
+      <path {...S} d="M88 33 Q70 12 54 26 L72 37 Z" />
+      <path {...LINES} d="M83 31 L62 20 M77 33 L58 26" />
+      <path {...S} d="M88 67 Q70 88 54 74 L72 63 Z" />
+      <path {...LINES} d="M186 39 Q179 50 186 61 M158 36 Q151 50 158 64 M128 34 Q121 50 128 66 M100 35 Q94 50 100 65" />
+      <circle {...S} fillOpacity="0" cx="204" cy="46" r="4" />
+      <circle fill="currentColor" cx="204" cy="46" r="1.6" />
+      <path {...LINES} d="M228 50 L206 55" />
     </g>
   ),
-  zander: ( // судак — прогонистый, колючий первый спинной плавник
+  zander: ( // судак — прогонистый, двойной спинной: колючий веер + мягкий
     <g>
-      <path d="M212 46 C198 36 176 30 146 28 C108 26 72 30 44 38 L20 30 L28 46 L20 62 L44 54 C72 62 108 65 146 62 C176 59 198 55 212 46 Z" />
-      <path d="M162 30 L156 15 L149 27 L142 14 L135 26 L128 15 L123 28 Z" />
-      <path d="M116 28 C108 19 96 19 90 23 L100 30 Z" />
-      <path d="M100 60 L92 71 L110 64 Z" />
+      <path {...S} d="M216 52 C198 40 172 33 142 31 C106 29 72 34 48 44 L48 60 C72 70 106 74 142 72 C172 70 198 64 216 52 Z" />
+      <path {...S} d="M48 44 L22 28 Q14 52 22 76 L48 60 Z" />
+      <path {...LINES} d="M46 52 L21 36 M46 52 L18 52 M46 52 L21 68" />
+      <path {...S} d="M168 32 Q160 14 150 30 Q144 12 134 29 Q128 13 120 31 Z" />
+      <path {...S} d="M108 31 Q96 18 84 27 L98 34 Z" />
+      <path {...S} d="M104 70 L94 82 L114 74 Z" />
+      <path {...LINES} d="M182 41 Q175 52 182 63 M152 38 Q145 52 152 66 M122 37 Q116 52 122 67" />
+      <circle {...S} fillOpacity="0" cx="194" cy="47" r="4" />
+      <circle fill="currentColor" cx="194" cy="47" r="1.6" />
     </g>
   ),
-  perch: ( // окунь — горбатый, высокое тело, гребень-колючка
+  perch: ( // окунь — горб, колючий веер-гребень, полосы дугами
     <g>
-      <path d="M204 48 C192 33 168 22 138 20 C104 17 74 26 52 40 L26 32 L34 48 L26 64 L52 56 C74 69 104 75 138 72 C168 69 192 61 204 48 Z" />
-      <path d="M152 22 L146 4 L138 18 L130 5 L122 17 L114 6 L108 19 L100 8 L96 21 Z" />
-      <path d="M112 71 L102 83 L124 75 Z" />
-      <path d="M160 66 L154 78 L172 70 Z" />
+      <path {...S} d="M196 58 C184 34 156 20 124 20 C92 20 62 36 46 54 L46 64 C62 84 92 98 124 98 C156 98 184 82 196 58 Z" />
+      <path {...S} d="M46 54 L20 38 Q12 59 20 82 L46 64 Z" />
+      <path {...LINES} d="M44 59 L19 44 M44 59 L16 59 M44 59 L19 75" />
+      <path {...S} d="M148 22 Q142 4 132 20 Q126 3 116 19 Q110 4 100 21 Q94 8 88 24 Z" />
+      <path {...S} d="M116 96 L106 110 L128 100 Z" />
+      <path {...S} d="M156 90 L150 102 L168 94 Z" />
+      <path {...LINES} d="M150 32 Q142 58 150 86 M124 28 Q116 58 124 92 M98 32 Q92 58 98 88" />
+      <circle {...S} fillOpacity="0" cx="172" cy="50" r="4.5" />
+      <circle fill="currentColor" cx="172" cy="50" r="1.8" />
     </g>
   ),
-  asp: ( // жерех — торпеда: малая голова, мощный вильчатый хвост
+  asp: ( // жерех — торпеда с мощным вильчатым веером-хвостом
     <g>
-      <path d="M208 44 C196 35 176 28 146 26 C110 23 76 28 48 38 L17 25 L30 44 L17 63 L48 50 C76 60 110 65 146 62 C176 60 196 52 208 44 Z" />
-      <path d="M132 27 C126 16 113 15 106 19 L116 29 Z" />
-      <path d="M104 61 L96 73 L114 66 Z" />
+      <path {...S} d="M212 48 C198 38 174 30 144 28 C108 25 74 30 50 41 L50 57 C74 66 108 71 144 68 C174 66 198 58 212 48 Z" />
+      <path {...S} d="M50 41 L18 22 Q26 49 18 76 L50 57 Z" />
+      <path {...LINES} d="M48 49 L20 30 M48 49 L22 49 M48 49 L20 68" />
+      <path {...S} d="M138 29 Q128 14 114 22 L126 32 Z" />
+      <path {...S} d="M108 68 L98 80 L118 72 Z" />
+      <path {...LINES} d="M180 37 Q173 48 180 59 M150 34 Q143 48 150 62 M120 33 Q114 48 120 63" />
+      <circle {...S} fillOpacity="0" cx="192" cy="44" r="3.8" />
+      <circle fill="currentColor" cx="192" cy="44" r="1.5" />
     </g>
   ),
 }
@@ -53,7 +79,7 @@ function Fish({ kind, top, dur, delay, scale, dir, drift }) {
       }}
     >
       <div className="swimmer-bob">
-        <svg viewBox="0 0 220 90" width="220" height="90" fill="currentColor" aria-hidden="true">
+        <svg viewBox="0 0 240 115" width="240" height="115" fill="none" aria-hidden="true">
           {FISH[kind]}
         </svg>
       </div>
@@ -83,7 +109,7 @@ function WeedCluster({ left, h, sway, delay, blades = 3 }) {
 // Конфигурация слоёв: дальний → ближний
 const LAYERS = [
   {
-    z: 'far', blur: 6, opacity: 0.10, color: '#7fd4d4',
+    z: 'far', blur: 3.5, opacity: 0.14, color: '#7fd4d4',
     fish: [
       { kind: 'perch', top: '16%', dur: '95s', delay: '-30s', scale: 0.45, dir: 'ltr', drift: '9s' },
       { kind: 'zander', top: '38%', dur: '110s', delay: '-70s', scale: 0.55, dir: 'ltr', drift: '11s' },
@@ -96,7 +122,7 @@ const LAYERS = [
     ],
   },
   {
-    z: 'mid', blur: 3, opacity: 0.14, color: '#6bc4c9',
+    z: 'mid', blur: 1.6, opacity: 0.20, color: '#6bc4c9',
     fish: [
       { kind: 'zander', top: '26%', dur: '62s', delay: '-20s', scale: 0.85, dir: 'rtl', drift: '8s' },
       { kind: 'asp', top: '58%', dur: '74s', delay: '-48s', scale: 0.75, dir: 'rtl', drift: '7s' },
@@ -109,7 +135,7 @@ const LAYERS = [
     ],
   },
   {
-    z: 'near', blur: 1.2, opacity: 0.18, color: '#59b8c2',
+    z: 'near', blur: 0.5, opacity: 0.26, color: '#59b8c2',
     fish: [
       { kind: 'pike', top: '44%', dur: '38s', delay: '-12s', scale: 1.45, dir: 'ltr', drift: '6s' },
       { kind: 'perch', top: '78%', dur: '46s', delay: '-30s', scale: 1.1, dir: 'rtl', drift: '7s' },

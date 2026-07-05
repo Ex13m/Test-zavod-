@@ -85,8 +85,8 @@ export default function SettingsView() {
                 ))}
               </div>
             </div>
-            <button className="btn sm mt-16" onClick={() => showToast('Настройки сохраняются автоматически', '💾')}>
-              💾 Всё сохраняется само
+            <button className="btn sm mt-16" onClick={() => showToast('Настройки сохраняются автоматически', '✓')}>
+              <Icon name="check" size={15} /> Всё сохраняется само
             </button>
           </div>
 

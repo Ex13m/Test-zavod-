@@ -30,9 +30,39 @@ export const useStore = create(
       // --- демо-наполнение (один раз) ---
       seeded: false,
 
+      // --- онбординг и воркспейсы магазинов ---
+      onboarded: false,
+      showOnboarding: false, // повторный запуск мастера «+ магазин»
+      setShowOnboarding: (showOnboarding) => set({ showOnboarding }),
+      shops: [], // {id, name, domain, siteUrl, lang, brands[], tags[], audience, niche}
+      activeShopId: 'default',
+      addShop: (shop) => {
+        const id = uid()
+        set((s) => ({ shops: [...s.shops, { id, createdAt: Date.now(), ...shop }] }))
+        return id
+      },
+      setActiveShop: (id) => {
+        const shop = get().shops.find((x) => x.id === id)
+        set((s) => ({
+          activeShopId: id,
+          // профиль магазина зеркалится в настройки генератора
+          settings: shop
+            ? {
+                ...s.settings,
+                siteUrl: shop.siteUrl,
+                brandName: shop.name,
+                defaultLang: shop.lang || s.settings.defaultLang,
+                utmSource: shop.domain?.replace(/\W+/g, '_') || s.settings.utmSource,
+                shopTags: shop.tags || [],
+              }
+            : s.settings,
+        }))
+      },
+
       // --- приманки ---
-      lures: [], // {id, name, type, imgKey, createdAt}
-      addLure: (lure) => set((s) => ({ lures: [{ id: uid(), createdAt: Date.now(), ...lure }, ...s.lures] })),
+      lures: [], // {id, name, type, imgKey, shopId, createdAt}
+      addLure: (lure) =>
+        set((s) => ({ lures: [{ id: uid(), createdAt: Date.now(), shopId: s.activeShopId, ...lure }, ...s.lures] })),
       updateLure: (id, patch) =>
         set((s) => ({ lures: s.lures.map((l) => (l.id === id ? { ...l, ...patch } : l)) })),
       removeLure: (id) => {
@@ -42,8 +72,9 @@ export const useStore = create(
       },
 
       // --- скрины стиля ---
-      shots: [], // {id, imgKey, features, createdAt}
-      addShot: (shot) => set((s) => ({ shots: [{ id: uid(), createdAt: Date.now(), ...shot }, ...s.shots] })),
+      shots: [], // {id, imgKey, features, shopId, createdAt}
+      addShot: (shot) =>
+        set((s) => ({ shots: [{ id: uid(), createdAt: Date.now(), shopId: s.activeShopId, ...shot }, ...s.shots] })),
       removeShot: (id) => {
         const sh = get().shots.find((x) => x.id === id)
         if (sh?.imgKey) deleteImage(sh.imgKey)
@@ -53,8 +84,9 @@ export const useStore = create(
       setStyleProfile: (styleProfile) => set({ styleProfile }),
 
       // --- история постов ---
-      posts: [], // {id, title, text, meta, lureId, imgKey, createdAt, published:[]}
-      addPost: (post) => set((s) => ({ posts: [{ id: uid(), createdAt: Date.now(), published: [], ...post }, ...s.posts] })),
+      posts: [], // {id, title, text, meta, lureId, imgKey, shopId, createdAt, published:[]}
+      addPost: (post) =>
+        set((s) => ({ posts: [{ id: uid(), createdAt: Date.now(), published: [], shopId: s.activeShopId, ...post }, ...s.posts] })),
       removePost: (id) => set((s) => ({ posts: s.posts.filter((p) => p.id !== id) })),
       markPublished: (id, channel) =>
         set((s) => ({
@@ -97,6 +129,9 @@ export const useStore = create(
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         seeded: s.seeded,
+        onboarded: s.onboarded,
+        shops: s.shops,
+        activeShopId: s.activeShopId,
         lures: s.lures,
         shots: s.shots,
         posts: s.posts,

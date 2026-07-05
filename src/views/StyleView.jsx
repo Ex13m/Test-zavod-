@@ -5,6 +5,7 @@ import { analyzeScreenshot, buildStyleProfile, TRAIT_LABELS } from '../engine/st
 import { useImage } from '../components/useImage'
 import Dropzone from '../components/Dropzone'
 import Icon from '../components/Icons'
+import { useShopItems } from '../components/useShopData'
 
 function Shot({ shot, scanning }) {
   const src = useImage(shot.imgKey)
@@ -19,7 +20,8 @@ function Shot({ shot, scanning }) {
 }
 
 export default function StyleView() {
-  const { shots, addShot, styleProfile, setStyleProfile, showToast } = useStore()
+  const { addShot, styleProfile, setStyleProfile, showToast } = useStore()
+  const shots = useShopItems('shots')
   const [scanning, setScanning] = useState(false)
 
   const onFiles = async (files) => {

@@ -2,9 +2,13 @@ import { useStore } from '../store'
 import { FRAMEWORKS } from '../engine/generator'
 import { LURE_TYPES } from '../engine/lureTypes'
 import Icon from '../components/Icons'
+import { useShopItems } from '../components/useShopData'
 
 export default function DashboardView() {
-  const { lures, posts, shots, styleProfile, setView, settings } = useStore()
+  const { styleProfile, setView, settings } = useStore()
+  const lures = useShopItems('lures')
+  const posts = useShopItems('posts')
+  const shots = useShopItems('shots')
   const published = posts.filter((p) => p.published?.length).length
 
   const stats = [
@@ -83,7 +87,7 @@ export default function DashboardView() {
                     <div className="post-meta-bar">
                       <span className="tag t-acc">{FRAMEWORKS[p.meta?.framework]?.name || p.meta?.framework}</span>
                       <span className="tag">{LURE_TYPES[p.meta?.lureType]?.name}</span>
-                      {p.published?.length > 0 && <span className="tag t-amber">🚀 {p.published.join(', ')}</span>}
+                      {p.published?.length > 0 && <span className="tag t-amber">↗ {p.published.join(', ')}</span>}
                     </div>
                   </div>
                 </div>
@@ -99,7 +103,7 @@ export default function DashboardView() {
           <div className="panel mt-20">
             <div className="panel-title"><Icon name="fan" size={14} className="icon-gold" /> Профиль стиля активен</div>
             <div className="row">
-              <span className="pill-note">✨ Завод пишет с оглядкой на {styleProfile.samples} эталонных скринов</span>
+              <span className="pill-note"><Icon name="fan" size={14} /> Завод пишет с оглядкой на {styleProfile.samples} эталонных скринов</span>
               <button className="btn ghost sm" onClick={() => setView('style')}>Настроить стиль</button>
             </div>
           </div>

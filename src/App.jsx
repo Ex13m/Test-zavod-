@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import { useStore } from './store'
-import { seedDemoIfNeeded } from './engine/seed'
 import FishCanvas from './components/FishCanvas'
 import AquaLayers from './components/AquaLayers'
 import Icon, { BrandFish } from './components/Icons'
+import Onboarding from './components/Onboarding'
+import Assistant from './components/Assistant'
+import { APP_VERSION } from './version'
 import DashboardView from './views/DashboardView'
 import LuresView from './views/LuresView'
 import FactoryView from './views/FactoryView'
@@ -33,11 +35,16 @@ const VIEWS = {
 }
 
 export default function App() {
-  const { view, setView, toast, lures, posts } = useStore()
+  const { view, setView, toast, lures, posts, shops, activeShopId, setActiveShop, setShowOnboarding, onboarded, seeded, showOnboarding } = useStore()
   const View = VIEWS[view] || DashboardView
   const badges = { lures: lures.length || null, history: posts.length || null }
 
-  useEffect(() => { seedDemoIfNeeded() }, [])
+  // миграция со старых версий: данные уже есть — мастер не навязываем
+  useEffect(() => {
+    if (seeded && !onboarded) useStore.setState({ onboarded: true })
+  }, [seeded, onboarded])
+
+  const wizardVisible = (!onboarded && !seeded) || showOnboarding
 
   return (
     <>
@@ -53,6 +60,22 @@ export default function App() {
               <div className="brand-sub">lure factory</div>
             </div>
           </div>
+          {shops.length > 0 && (
+            <div className="shop-switch">
+              <select value={activeShopId} onChange={(e) => setActiveShop(e.target.value)} title="Воркспейс магазина">
+                <option value="default">Общий воркспейс</option>
+                {shops.map((sh) => <option key={sh.id} value={sh.id}>{sh.name}</option>)}
+              </select>
+              <button onClick={() => setShowOnboarding(true)} title="Добавить магазин">+</button>
+            </div>
+          )}
+          {shops.length === 0 && (
+            <div className="shop-switch">
+              <button style={{ flex: 1 }} onClick={() => setShowOnboarding(true)} title="Настроить магазин по адресу сайта">
+                + Магазин по сайту
+              </button>
+            </div>
+          )}
           {NAV.map((n) => (
             <button key={n.id} className={'nav-item' + (view === n.id ? ' active' : '')} onClick={() => setView(n.id)}>
               <span className="nav-icon"><Icon name={n.icon} /></span>
@@ -61,7 +84,7 @@ export default function App() {
             </button>
           ))}
           <div className="sidebar-foot">
-            <b>v0.3.0</b> · посты и фото хранятся локально в вашем браузере
+            <b>v{APP_VERSION}</b> · посты и фото хранятся локально в вашем браузере
           </div>
         </aside>
         <main className="main" key={view}>
@@ -73,6 +96,8 @@ export default function App() {
           <span>{toast.icon}</span> {toast.msg}
         </div>
       )}
+      <Assistant />
+      {wizardVisible && <Onboarding />}
     </>
   )
 }
