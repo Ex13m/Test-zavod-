@@ -104,7 +104,7 @@ export default function StyleView() {
                 </div>
                 {styleProfile.ai && (
                   <div className="mt-16" style={{ borderTop: '1px solid var(--stroke)', paddingTop: 12 }}>
-                    <div className="pill-note" style={{ marginBottom: 10 }}>🤖 ИИ прочитал тексты постов</div>
+                    <div className="pill-note" style={{ marginBottom: 10 }}><Icon name="lens" size={14} /> ИИ прочитал тексты постов</div>
                     <div style={{ fontSize: 13, color: 'var(--ink-dim)', lineHeight: 1.7 }}>
                       <b style={{ color: 'var(--ink)' }}>Тон:</b> {styleProfile.ai.tone}<br />
                       {styleProfile.ai.ctaStyle && <><b style={{ color: 'var(--ink)' }}>CTA:</b> {styleProfile.ai.ctaStyle}<br /></>}

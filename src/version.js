@@ -1,6 +1,6 @@
 // Единая точка контроля версий приложения.
 // Обновляется вместе с package.json и CHANGELOG.md при каждом релизе.
-export const APP_VERSION = '0.10.0'
+export const APP_VERSION = '0.10.1'
 export const APP_DATE = '05.07.2026'
 
 // Краткая история для окна «О версии» (полная — CHANGELOG.md в репозитории)

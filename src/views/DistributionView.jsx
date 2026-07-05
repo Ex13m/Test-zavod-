@@ -23,24 +23,24 @@ export default function DistributionView() {
     const photo = post.imgKey ? await loadImage(post.imgKey) : null
 
     if (channels.telegram) {
-      pushLog('✈️ Telegram: отправка…')
+      pushLog('Telegram → отправка…')
       const r = await publishToTelegram(post, photo, settings)
-      pushLog(r.ok ? '✈️ Telegram: ✅ опубликовано' : `✈️ Telegram: ❌ ${r.error}`)
+      pushLog(r.ok ? 'Telegram → OK, опубликовано' : `Telegram → ошибка: ${r.error}`)
       if (r.ok) markPublished(post.id, 'Telegram')
     }
     if (channels.webhook) {
-      pushLog('🔗 Вебхук: отправка…')
+      pushLog('Вебхук → отправка…')
       const r = await publishToWebhook(post, photo, settings)
-      pushLog(r.ok ? `🔗 Вебхук: ✅ отправлено${r.blind ? ' (без чтения ответа — CORS)' : ''}` : `🔗 Вебхук: ❌ ${r.error}`)
+      pushLog(r.ok ? `Вебхук → OK, отправлено${r.blind ? ' (без чтения ответа — CORS)' : ''}` : `Вебхук → ошибка: ${r.error}`)
       if (r.ok) markPublished(post.id, preset?.name || 'Вебхук')
     }
     for (const ch of CHANNELS.filter((c) => !c.real)) {
       if (channels[ch.id]) {
-        pushLog(`🧪 ${ch.name}: заглушка — пост поставлен в очередь (API в дорожной карте)`)
+        pushLog(`${ch.name} → заглушка: пост в очереди (API в дорожной карте)`)
         markPublished(post.id, ch.name)
       }
     }
-    if (!Object.values(channels).some(Boolean)) pushLog('⚠️ Ни один канал не включён')
+    if (!Object.values(channels).some(Boolean)) pushLog('Ни один канал не включён')
     setBusy(false)
     showToast('Раздача завершена — смотрите журнал', '📡')
   }

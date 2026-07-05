@@ -34,6 +34,13 @@ import HistoryView from './views/HistoryView'
 import DistributionView from './views/DistributionView'
 import SettingsView from './views/SettingsView'
 
+// соответствие старых эмодзи-меток фирменным иконкам
+const TOAST_ICONS = {
+  '✅': 'check', '✓': 'check', '💾': 'check', '📋': 'copy', '📦': 'cube',
+  '🎣': 'hook', '🧬': 'fan', '⚠️': 'diamond', '⚠': 'diamond', '🤖': 'lens',
+  '📡': 'tower', '🎁': 'cube',
+}
+
 const NAV = [
   { id: 'dashboard', icon: 'gauge', name: 'Пульт' },
   { id: 'lures', icon: 'hook', name: 'Товары' },
@@ -114,7 +121,7 @@ export default function App() {
       </div>
       {toast && (
         <div className="toast" key={toast.id}>
-          <span>{toast.icon}</span> {toast.msg}
+          <Icon name={TOAST_ICONS[toast.icon] || 'check'} size={16} className="icon-gold" /> {toast.msg}
         </div>
       )}
       <Assistant />

@@ -189,7 +189,7 @@ export default function Onboarding() {
               <div className="op-name">
                 {profile.name} <span className="tag t-acc">{profile.domain}</span>{' '}
                 <span className={'tag ' + (profile.aiPowered ? 't-acc' : 't-amber')}>
-                  {profile.aiPowered ? '🤖 ИИ-анализ сайта' : 'эвристика'}
+                  {profile.aiPowered ? 'ИИ-анализ сайта' : 'эвристика'}
                 </span>
               </div>
               <div className="op-row"><b>Ниша:</b> {profile.niche}</div>

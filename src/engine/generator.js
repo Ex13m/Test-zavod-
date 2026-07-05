@@ -200,7 +200,7 @@ export function generatePost(p) {
   const text = [hook, ...body, cta].join('\n\n') + hashtags(ctx, style, rnd, tagPool)
 
   return {
-    title: `${type.icon} ${type.name} «${p.lure.name}»`,
+    title: `${type.name} «${p.lure.name}»`,
     text,
     meta: {
       framework: p.framework,
@@ -263,7 +263,7 @@ function generateFromPack(p, type, tone, rnd) {
   }
 
   return {
-    title: `${type.icon} ${cap(t.lname)} ${pack.quotes[0]}${p.lure.name}${pack.quotes[1]}`,
+    title: `${cap(t.lname)} ${pack.quotes[0]}${p.lure.name}${pack.quotes[1]}`,
     text,
     meta: {
       framework: p.framework,

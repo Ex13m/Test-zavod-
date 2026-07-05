@@ -15,7 +15,7 @@ function AgentPanel() {
       {state === 'probe' && <div className="hint">Проверяем доступность агента…</div>}
       {state === 'on' && (
         <div className="pill-note" style={{ borderColor: 'rgba(74,222,128,0.4)', color: 'var(--ok)', background: 'rgba(74,222,128,0.07)' }}>
-          🤖 Агент активен · {st.model} — распознавание товаров по фото, чтение постов, анализ сайтов
+          Агент активен · {st.model} — распознавание товаров по фото, чтение постов, анализ сайтов
         </div>
       )}
       {state === 'nokey' && (

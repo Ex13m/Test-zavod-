@@ -5,7 +5,29 @@ import { useImage } from '../components/useImage'
 import Dropzone from '../components/Dropzone'
 import Icon from '../components/Icons'
 import { useShopItems } from '../components/useShopData'
-import { classifyProduct } from '../engine/agent'
+import { classifyProduct, agentStatus } from '../engine/agent'
+import { useEffect, useState } from 'react'
+
+// Заметный статус распознавания — чтобы было ясно, ПОЧЕМУ тип определился так
+function AgentBanner() {
+  const [st, setSt] = useState(null)
+  const { setView } = useStore()
+  useEffect(() => { agentStatus().then(setSt) }, [])
+  if (!st) return null
+  if (st.hasKey) {
+    return (
+      <div className="pill-note mb-16" style={{ borderColor: 'rgba(85,209,135,0.4)', color: 'var(--ok)', background: 'rgba(85,209,135,0.07)' }}>
+        <Icon name="lens" size={14} /> ИИ-агент активен: тип, бренд и название определяются по самому фото
+      </div>
+    )
+  }
+  return (
+    <div className="pill-note mb-16" style={{ cursor: 'pointer' }} onClick={() => setView('settings')}>
+      <Icon name="lens" size={14} /> ИИ-агент не подключён — тип угадывается по имени файла.
+      Нажмите, чтобы открыть инструкцию по включению (Настройки → ИИ-агент)
+    </div>
+  )
+}
 
 function LureCard({ lure, onOpen }) {
   const src = useImage(lure.imgKey)
@@ -77,6 +99,7 @@ export default function LuresView() {
         </p>
       </div>
       <div className="view-body">
+        <AgentBanner />
         <Dropzone
           icon={<Icon name="hook" size={40} style={{ margin: '0 auto', color: 'var(--acc)' }} />}
           title="Перетащите фото товаров или кликните"
