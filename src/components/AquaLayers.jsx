@@ -1,13 +1,16 @@
 // ============================================================
-// Многослойный подводный фон: полупрозрачные силуэты настоящих
-// хищников (щука, судак, окунь, жерех) плывут в 3 параллакс-слоях
-// с разными скоростями, масштабами и глубиной резкости; на каждом
-// слое — плавно покачивающиеся водоросли.
+// Многослойный подводный фон: рыбы (щука, судак, окунь, жерех),
+// сгенерированные Higgsfield (Recraft V4.1 vector), плывут в
+// 3 параллакс-слоях с разными скоростями/масштабами/blur;
+// на каждом слое — плавно покачивающиеся водоросли.
 // ============================================================
+import { ART } from '../art'
+import SmartImg from './SmartImg'
 
-// Рыбы «Зигфелд»: ар-деко графика тем же штрихом, что и иконки —
-// веерные хвосты и плавники с лучами, дуги чешуи, жаберная линия,
-// кольцо глаза. Заливка полупрозрачная, контур читается.
+// Рыбы фона: графика тем же штрихом, что и иконки — хвосты и
+// плавники с лучами, дуги чешуи, жаберная линия, кольцо глаза.
+// Заливка полупрозрачная, контур читается. (Замещаются растровым
+// артом Higgsfield, когда он доступен — см. ART ниже.)
 const S = { fill: 'currentColor', fillOpacity: 0.16, stroke: 'currentColor', strokeOpacity: 0.75, strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }
 const LINES = { fill: 'none', stroke: 'currentColor', strokeOpacity: 0.55, strokeWidth: 1.3, strokeLinecap: 'round' }
 
@@ -79,9 +82,16 @@ function Fish({ kind, top, dur, delay, scale, dir, drift }) {
       }}
     >
       <div className="swimmer-bob">
-        <svg viewBox="0 0 240 115" width="240" height="115" fill="none" aria-hidden="true">
-          {FISH[kind]}
-        </svg>
+        <SmartImg
+          srcs={ART[kind] || []}
+          className="art-blend"
+          style={{ width: 240, height: 'auto' }}
+          fallback={
+            <svg viewBox="0 0 240 115" width="240" height="115" fill="none" aria-hidden="true">
+              {FISH[kind]}
+            </svg>
+          }
+        />
       </div>
     </div>
   )
@@ -109,7 +119,7 @@ function WeedCluster({ left, h, sway, delay, blades = 3 }) {
 // Конфигурация слоёв: дальний → ближний
 const LAYERS = [
   {
-    z: 'far', blur: 3.5, opacity: 0.14, color: '#7fd4d4',
+    z: 'far', blur: 3.5, opacity: 0.20, color: '#7fd4d4',
     fish: [
       { kind: 'perch', top: '16%', dur: '95s', delay: '-30s', scale: 0.45, dir: 'ltr', drift: '9s' },
       { kind: 'zander', top: '38%', dur: '110s', delay: '-70s', scale: 0.55, dir: 'ltr', drift: '11s' },
@@ -122,7 +132,7 @@ const LAYERS = [
     ],
   },
   {
-    z: 'mid', blur: 1.6, opacity: 0.20, color: '#6bc4c9',
+    z: 'mid', blur: 1.6, opacity: 0.28, color: '#6bc4c9',
     fish: [
       { kind: 'zander', top: '26%', dur: '62s', delay: '-20s', scale: 0.85, dir: 'rtl', drift: '8s' },
       { kind: 'asp', top: '58%', dur: '74s', delay: '-48s', scale: 0.75, dir: 'rtl', drift: '7s' },
@@ -135,7 +145,7 @@ const LAYERS = [
     ],
   },
   {
-    z: 'near', blur: 0.5, opacity: 0.26, color: '#59b8c2',
+    z: 'near', blur: 0.5, opacity: 0.36, color: '#59b8c2',
     fish: [
       { kind: 'pike', top: '44%', dur: '38s', delay: '-12s', scale: 1.45, dir: 'ltr', drift: '6s' },
       { kind: 'perch', top: '78%', dur: '46s', delay: '-30s', scale: 1.1, dir: 'rtl', drift: '7s' },

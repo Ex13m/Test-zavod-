@@ -17,7 +17,7 @@ import SettingsView from './views/SettingsView'
 
 const NAV = [
   { id: 'dashboard', icon: 'gauge', name: 'Пульт' },
-  { id: 'lures', icon: 'hook', name: 'Приманки' },
+  { id: 'lures', icon: 'hook', name: 'Товары' },
   { id: 'factory', icon: 'factory', name: 'Конвейер' },
   { id: 'style', icon: 'fan', name: 'Стиль' },
   { id: 'history', icon: 'archive', name: 'История' },

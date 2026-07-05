@@ -108,6 +108,48 @@ const EN_TYPES = {
     proofs: ['An American bass classic that transferred perfectly to pike.', 'Zero break-offs in a whole season of timber fishing.'],
     lexicon: ['cover', 'the skirt', 'a slow roll through weed'],
   },
+  hooks: {
+    lname: 'hooks', plural: true, fish: ['zander', 'pike'], seasons: ['in any season', 'on any rig'],
+    benefits: ['chemically sharpened points stay razor-sharp for dozens of trips', 'the right bend — fish don\u2019t straighten them and don\u2019t come off'],
+    pains: ['losing fish to a dull point', 'a trophy straightening a cheap hook'],
+    proofs: ['Competition anglers re-rig all their lures with this series.', 'Bend test: holds twice the rated load.'],
+    lexicon: ['the hook set', 'the fight'],
+  },
+  rod: {
+    lname: 'rod', fish: ['pike', 'zander'], seasons: ['all open-water season', 'from boat and bank'],
+    benefits: ['a crisp blank telegraphs every tick straight to your hand', 'featherweight — cast all day without fatigue'],
+    pains: ['a numb rod that misses half the bites', 'a snapped tip on the first trip'],
+    proofs: ['Guides put this series into rental — it survives hundreds of trips.', 'Landed an 18 kg catfish on test — the blank never creaked.'],
+    lexicon: ['the hook set', 'the blank'],
+  },
+  reel: {
+    lname: 'reel', fish: ['pike', 'zander'], seasons: ['through thousands of casts a season', 'in rain and frost'],
+    benefits: ['perfect line lay — longer casts and no wind knots', 'a drag that fires instantly and saves thin leaders'],
+    pains: ['a wind knot at the longest cast of the day', 'play and grinding after one season'],
+    proofs: ['Three seasons of hard jigging — still zero play.', 'Service centers see this model least of all.'],
+    lexicon: ['the drag', 'line lay'],
+  },
+  line: {
+    lname: 'braid', fish: ['zander', 'perch'], seasons: ['over shell beds and rocks', 'at long range'],
+    benefits: ['zero stretch — you feel the bottom and every bite like a jolt', 'true breaking strain that matches the label'],
+    pains: ['losing a lure to a cast-off', 'fraying on shells and breaking on a trophy'],
+    proofs: ['Lab test: holds 12% over the rated strain.', 'Half a year of hard fishing — not a single cast-off.'],
+    lexicon: ['sensitivity', 'the leader'],
+  },
+  apparel: {
+    lname: 'jersey', fish: ['pike', 'perch'], seasons: ['in heat and rain', 'on the boat and the bank'],
+    benefits: ['breathable UPF fabric — sun and sweat are no problem', 'dries on your body right after the rain'],
+    pains: ['burnt neck and shoulders after a day on the water', 'a cotton tee that stays wet till evening'],
+    proofs: ['Half the boat league competes in this jersey.', 'The print looks new after 50 washes.'],
+    lexicon: ['the tournament', 'the team'],
+  },
+  knife: {
+    lname: 'fillet knife', fish: ['zander', 'bream'], seasons: ['at the cleaning table', 'on every trip'],
+    benefits: ['steel that keeps its edge from the first scale to the last fillet', 'a grip that won\u2019t slip in wet hands'],
+    pains: ['a dull knife ruining the fillet', 'rust spots after the first wash'],
+    proofs: ['Lodge guides clean their catch with this knife.', 'Consistently top-3 in fillet-knife reviews.'],
+    lexicon: ['filleting', 'the edge'],
+  },
 }
 
 const EN = {
@@ -271,6 +313,48 @@ const CS_TYPES = {
     pains: ['nejrybnější místa jsou nejhorší na záseky', 'po dešti je voda kalná a ryba nástrahu nevidí'],
     proofs: ['Americká klasika na bassy, která skvěle funguje i na štiky.', 'Nula utržených nástrah za celou sezónu v závozech.'],
     lexicon: ['překážky', 'sukýnku', 'pomalé vedení trávou'],
+  },
+  hooks: {
+    lname: 'háčky', plural: true, fish: ['candáta', 'štiku'], seasons: ['v každé sezóně', 'na jakékoli montáži'],
+    benefits: ['chemicky broušené hroty drží ostrost desítky vycházek', 'správný oblouk — ryba háček nenarovná a nesejde'],
+    pains: ['ztráta ryby kvůli tupému hrotu', 'trofej narovná levný háček'],
+    proofs: ['Závodníci přezbrojují všechny nástrahy právě na tuto sérii.', 'Test ohybu: drží dvojnásobek udávané zátěže.'],
+    lexicon: ['zásek', 'zdolávání'],
+  },
+  rod: {
+    lname: 'prut', fish: ['štiku', 'candáta'], seasons: ['celou sezónu volné vody', 'z lodi i ze břehu'],
+    benefits: ['zvonivý blank přenese do ruky každý ťuk', 'váha pírka — nahazujete celý den bez únavy'],
+    pains: ['tupý prut, který nepředá polovinu záběrů', 'zlomená špička hned na první vycházce'],
+    proofs: ['Průvodci dávají tuto sérii do půjčovny — přežije stovky vycházek.', 'Na testu sumec 18 kg — blank ani nekřupl.'],
+    lexicon: ['zásek', 'blank'],
+  },
+  reel: {
+    lname: 'naviják', fish: ['štiku', 'candáta'], seasons: ['přes tisíce hodů za sezónu', 'v dešti i mrazu'],
+    benefits: ['rovné kladení šňůry — delší hod a žádné paruky', 'brzda reaguje okamžitě a zachrání tenké návazce'],
+    pains: ['paruka při nejdelším hodu dne', 'vůle a skřípání po jedné sezóně'],
+    proofs: ['Tři sezóny tvrdého jigu — stále žádná vůle.', 'Servis vidí tento model nejméně ze všech.'],
+    lexicon: ['brzdu', 'kladení šňůry'],
+  },
+  line: {
+    lname: 'šňůra', gender: 'f', fish: ['candáta', 'okouna'], seasons: ['přes lastury a kameny', 'na dlouhé vzdálenosti'],
+    benefits: ['nulová průtažnost — cítíte dno i jemný záběr', 'reálná nosnost odpovídá etiketě'],
+    pains: ['ustřelená nástraha při nahazování', 'odřená šňůra praskne na trofeji'],
+    proofs: ['Test v redakci: drží o 12 % víc, než je uvedeno.', 'Půl roku tvrdého lovu — ani jeden ustřel.'],
+    lexicon: ['citlivost', 'návazec'],
+  },
+  apparel: {
+    lname: 'dres', fish: ['štiku', 'okouna'], seasons: ['ve vedru i dešti', 'na lodi i na břehu'],
+    benefits: ['prodyšná látka s UV ochranou — slunce ani pot nevadí', 'uschne přímo na těle hned po dešti'],
+    pains: ['spálený krk po dni na vodě', 'bavlněné tričko mokré až do večera'],
+    proofs: ['V tomto dresu závodí půlka lodní ligy.', 'Po 50 praních vypadá potisk jako nový.'],
+    lexicon: ['turnaj', 'tým'],
+  },
+  knife: {
+    lname: 'filetovací nůž', fish: ['candáta', 'cejna'], seasons: ['u porcovacího stolu', 'na každé výpravě'],
+    benefits: ['ocel drží ostří od první šupiny po poslední filet', 'rukojeť neklouže v mokrých rukou'],
+    pains: ['tupý nůž, který zničí filet', 'rezavé skvrny po prvním mytí'],
+    proofs: ['Průvodci na základnách porcují úlovek právě tímto nožem.', 'V recenzích filetovacích nožů stabilně v top 3.'],
+    lexicon: ['filetování', 'ostří'],
   },
 }
 

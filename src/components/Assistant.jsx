@@ -2,12 +2,26 @@ import { useState } from 'react'
 import { useStore } from '../store'
 import { useShopItems } from './useShopData'
 import { APP_VERSION, APP_DATE, VERSION_HISTORY, PDF_GUIDES } from '../version'
+import { ART } from '../art'
+import SmartImg from './SmartImg'
 import Icon from './Icons'
 
-// Капитан Окунь — фирменный персонаж-иллюстрация: объёмное тело с
-// градиентами, полосы окуня, колючий гребень с перепонкой, выразительный
-// глаз и капитанская фуражка с золотым якорем. Всё — рисованный SVG.
+// Капитан Окунь: растровый маскот из Higgsfield (Nano Banana),
+// тёмный фон растворяется через mix-blend-mode; при недоступности
+// арта — рисованный SVG-фолбэк ниже.
 export function Captain({ size = 84 }) {
+  return (
+    <SmartImg
+      srcs={ART.captain}
+      alt="Капитан Окунь"
+      className="captain art-blend"
+      style={{ width: size, height: size, objectFit: 'contain' }}
+      fallback={<CaptainSvg size={size} />}
+    />
+  )
+}
+
+function CaptainSvg({ size = 84 }) {
   return (
     <svg viewBox="0 0 148 126" width={size} height={size} className="captain" aria-hidden="true">
       <defs>

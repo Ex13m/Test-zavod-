@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useStore, saveImage, loadImage } from '../store'
 import { generatePost, FRAMEWORKS, TONES } from '../engine/generator'
 import { LANGS } from '../engine/i18n'
-import { LURE_TYPES } from '../engine/lureTypes'
+import { ALL_TYPES } from '../engine/lureTypes'
 import { useImage } from '../components/useImage'
 import Icon from '../components/Icons'
 import { useShopItems } from '../components/useShopData'
@@ -60,7 +60,7 @@ export default function FactoryView() {
   }, [result, stage])
 
   const run = () => {
-    if (!lure) return showToast('Сначала выберите приманку со склада', '⚠️')
+    if (!lure) return showToast('Сначала выберите товар со склада', '⚠️')
     timers.current.forEach(clearTimeout)
     setSaved(false)
     setResult(null)
@@ -113,12 +113,12 @@ export default function FactoryView() {
             <div className="panel-title"><Icon name="quill" size={14} className="icon-gold" /> Рецептура поста</div>
 
             <div className="field">
-              <label>Приманка</label>
+              <label>Товар</label>
               <select value={lureId} onChange={(e) => setLureId(e.target.value)}>
                 <option value="">— выбрать со склада —</option>
                 {lures.map((l) => (
                   <option key={l.id} value={l.id}>
-                    {l.name} · {LURE_TYPES[l.type]?.name}
+                    {l.name} · {ALL_TYPES[l.type]?.name}
                   </option>
                 ))}
               </select>

@@ -1,5 +1,5 @@
 import { useStore, saveImage } from '../store'
-import { LURE_TYPE_LIST, LURE_TYPES, guessLureType } from '../engine/lureTypes'
+import { LURE_TYPE_LIST, ALL_TYPES, guessLureType } from '../engine/lureTypes'
 import { fileToDataUrl } from '../engine/imageUtil'
 import { useImage } from '../components/useImage'
 import Dropzone from '../components/Dropzone'
@@ -19,7 +19,7 @@ function LureCard({ lure, onOpen }) {
       >✕</button>
       <div className="lc-body">
         <div className="lc-name">{lure.name}</div>
-        <div className="lc-type">{LURE_TYPES[lure.type]?.name}</div>
+        <div className="lc-type">{ALL_TYPES[lure.type]?.name}</div>
         <select
           className="mt-16"
           style={{
@@ -55,16 +55,16 @@ export default function LuresView() {
   return (
     <>
       <div className="view-head">
-        <h1 className="view-title">Склад <span className="glow">приманок</span></h1>
+        <h1 className="view-title">Склад <span className="glow">товаров</span></h1>
         <p className="view-sub">
-          Закидывайте фото — завод определит тип по имени файла (поправить можно прямо на карточке).
+          Закидывайте фото любых товаров — приманки, крючки, удилища, катушки, шнуры, одежда, ножи. Тип определяется по имени файла, поправить можно прямо на карточке.
           Клик по карточке отправляет приманку на конвейер.
         </p>
       </div>
       <div className="view-body">
         <Dropzone
           icon={<Icon name="hook" size={40} style={{ margin: '0 auto', color: 'var(--acc)' }} />}
-          title="Перетащите фото приманок или кликните"
+          title="Перетащите фото товаров или кликните"
           sub="JPG · PNG · WEBP — можно пачкой, завод всё переварит"
           onFiles={onFiles}
         />
@@ -72,7 +72,7 @@ export default function LuresView() {
           {lures.length === 0 ? (
             <div className="empty-state">
               <span className="es-icon" style={{ color: 'var(--acc)' }}><Icon name="hook" size={44} style={{ margin: '0 auto' }} /></span>
-              <div className="es-text">Склад пуст. Первая партия приманок ждёт загрузки.</div>
+              <div className="es-text">Склад пуст. Первая партия товаров ждёт загрузки.</div>
             </div>
           ) : (
             <div className="lure-grid">

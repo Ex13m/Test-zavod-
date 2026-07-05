@@ -1,6 +1,6 @@
 import { useStore } from '../store'
 import { FRAMEWORKS } from '../engine/generator'
-import { LURE_TYPES } from '../engine/lureTypes'
+import { ALL_TYPES } from '../engine/lureTypes'
 import Icon from '../components/Icons'
 import { useShopItems } from '../components/useShopData'
 
@@ -12,7 +12,7 @@ export default function DashboardView() {
   const published = posts.filter((p) => p.published?.length).length
 
   const stats = [
-    { icon: 'hook', c: 'var(--acc)', val: lures.length, label: 'Приманок на складе', glow: 'rgba(45,212,191,0.16)' },
+    { icon: 'hook', c: 'var(--acc)', val: lures.length, label: 'Товаров на складе', glow: 'rgba(45,212,191,0.16)' },
     { icon: 'quill', c: 'var(--acc-2)', val: posts.length, label: 'Постов произведено', glow: 'rgba(251,191,36,0.14)' },
     { icon: 'send', c: 'var(--acc-3)', val: published, label: 'Отправлено в каналы', glow: 'rgba(244,114,182,0.14)' },
     { icon: 'fan', c: 'var(--acc-4)', val: shots.length, label: 'Скринов стиля изучено', glow: 'rgba(129,140,248,0.16)' },
@@ -86,7 +86,7 @@ export default function DashboardView() {
                     <div className="hi-text">{p.text}</div>
                     <div className="post-meta-bar">
                       <span className="tag t-acc">{FRAMEWORKS[p.meta?.framework]?.name || p.meta?.framework}</span>
-                      <span className="tag">{LURE_TYPES[p.meta?.lureType]?.name}</span>
+                      <span className="tag">{ALL_TYPES[p.meta?.lureType]?.name}</span>
                       {p.published?.length > 0 && <span className="tag t-amber">↗ {p.published.join(', ')}</span>}
                     </div>
                   </div>

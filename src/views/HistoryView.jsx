@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '../store'
 import { FRAMEWORKS } from '../engine/generator'
-import { LURE_TYPES } from '../engine/lureTypes'
+import { ALL_TYPES } from '../engine/lureTypes'
 import { useImage } from '../components/useImage'
 import Icon from '../components/Icons'
 import { useShopItems } from '../components/useShopData'

@@ -2,7 +2,7 @@
 // Генератор постов-воронок. Эвристическая сборка: копирайтинговый
 // фреймворк × тип приманки × тон × профиль стиля (из скринов).
 // ============================================================
-import { LURE_TYPES } from './lureTypes'
+import { LURE_TYPES, ALL_TYPES, PRODUCT_TYPES } from './lureTypes'
 import { LANG_PACKS } from './i18n'
 
 const pick = (arr, rnd) => arr[Math.floor(rnd() * arr.length)]
@@ -43,7 +43,7 @@ const EMOJI = {
 
 const HOOKS = {
   aida: [
-    (c) => `Хищник провожает и разворачивается? ${cap(c.dem)} ${c.lname} закрывает вопрос.`,
+    (c) => `Хищник провожает и разворачивается? ${cap(c.dem)} ${c.lname} ${c.closes}.`,
     (c) => `Стоп-лента для тех, кто ловит ${c.fish}.`,
     (c) => `Пока вы читаете этот пост, кто-то уже ставит ${c.lname} «${c.title}» на поводок.`,
   ],
@@ -118,12 +118,17 @@ function buildBody(fw, c, style, rnd) {
       break
     case 'pas':
       B.push(`${cap(c.pain)}. Проверяешь узлы, меняешь проводку — а дело в том, что приманка не даёт хищнику сигнал «атакуй».`)
-      B.push(`${cap(c.lname)} «${c.title}» решает это: ${c.benefit}. Плюс ${benefit2}.`)
+      B.push(`${cap(c.lname)} «${c.title}» ${c.solves} это: ${c.benefit}. Плюс ${benefit2}.`)
       B.push(c.proof)
       break
     case 'story':
-      B.push(`Ставлю ${c.lname} «${c.title}», делаю проводку через ${pick(c.type.lexicon, rnd)} — и на второй заброс удар такой, что фрикцион запел.`)
-      B.push(`За утро — ${3 + Math.floor(rnd() * 7)} хвостов. Секрет простой: ${c.benefit}.`)
+      if (c.isProduct) {
+        B.push(`Беру ${c.lname} «${c.title}» на первую же рыбалку — и уже к обеду понимаю: ${c.benefit}.`)
+        B.push(`За день на воде ни одного нарекания. А главное — забываешь, что ${c.pain}.`)
+      } else {
+        B.push(`Ставлю ${c.lname} «${c.title}», делаю проводку через ${pick(c.type.lexicon, rnd)} — и на второй заброс удар такой, что фрикцион запел.`)
+        B.push(`За утро — ${3 + Math.floor(rnd() * 7)} хвостов. Секрет простой: ${c.benefit}.`)
+      }
       B.push(`${c.proof}`)
       break
     case 'expert':
@@ -147,7 +152,7 @@ function buildBody(fw, c, style, rnd) {
  */
 export function generatePost(p) {
   const rnd = mulberry32(p.seed ?? Date.now())
-  const type = LURE_TYPES[p.lure.type] || LURE_TYPES.wobbler
+  const type = ALL_TYPES[p.lure.type] || LURE_TYPES.wobbler
   const tone = TONES[p.tone] || TONES.friendly
 
   // нерусские языки собираются из языковых пакетов
@@ -164,8 +169,11 @@ export function generatePost(p) {
   const ctx = {
     type,
     lname: type.name.toLowerCase(),
-    dem: type.gender === 'f' ? 'эта' : 'этот',
-    demAcc: type.gender === 'f' ? 'эту' : 'этот',
+    dem: type.plural ? 'эти' : type.gender === 'f' ? 'эта' : 'этот',
+    demAcc: type.plural ? 'эти' : type.gender === 'f' ? 'эту' : 'этот',
+    closes: type.plural ? 'закрывают вопрос' : 'закрывает вопрос',
+    solves: type.plural ? 'решают' : 'решает',
+    isProduct: Boolean(PRODUCT_TYPES[type.id]),
     title: p.lure.name,
     fish: pick(type.fish, rnd),
     season: pick(type.seasons, rnd),
