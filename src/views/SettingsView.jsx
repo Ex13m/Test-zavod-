@@ -1,7 +1,42 @@
+import { useEffect, useState } from 'react'
 import { useStore } from '../store'
 import { FRAMEWORKS, TONES } from '../engine/generator'
 import { LANGS } from '../engine/i18n'
+import { agentStatus } from '../engine/agent'
 import Icon from '../components/Icons'
+
+function AgentPanel() {
+  const [st, setSt] = useState(null)
+  useEffect(() => { agentStatus().then(setSt) }, [])
+  const state = !st ? 'probe' : st.offline ? 'offline' : st.hasKey ? 'on' : 'nokey'
+  return (
+    <div className="panel mt-20">
+      <div className="panel-title"><Icon name="lens" size={14} className="icon-gold" /> ИИ-агент (Claude Vision)</div>
+      {state === 'probe' && <div className="hint">Проверяем доступность агента…</div>}
+      {state === 'on' && (
+        <div className="pill-note" style={{ borderColor: 'rgba(74,222,128,0.4)', color: 'var(--ok)', background: 'rgba(74,222,128,0.07)' }}>
+          🤖 Агент активен · {st.model} — распознавание товаров по фото, чтение постов, анализ сайтов
+        </div>
+      )}
+      {state === 'nokey' && (
+        <>
+          <div className="pill-note">Агент задеплоен, но ключ не задан — работает резервная эвристика</div>
+          <div className="hint" style={{ marginTop: 10, lineHeight: 1.7 }}>
+            Включение (2 минуты): Netlify → Site configuration → Environment variables →
+            добавьте <b style={{ color: 'var(--acc)' }}>ANTHROPIC_API_KEY</b> (ключ с console.anthropic.com) → Redeploy.
+            Подробно: docs/AI-AGENT.md в репозитории.
+          </div>
+        </>
+      )}
+      {state === 'offline' && (
+        <div className="hint">
+          Локальный запуск — serverless-функции недоступны. На деплое Netlify агент включится автоматически
+          (при заданном ANTHROPIC_API_KEY), без него — эвристика.
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function SettingsView() {
   const { settings, setSettings, showToast } = useStore()
@@ -89,6 +124,8 @@ export default function SettingsView() {
               <Icon name="check" size={15} /> Всё сохраняется само
             </button>
           </div>
+
+          <AgentPanel />
 
           <div className="panel mt-20" style={{ borderColor: 'rgba(251,113,133,0.25)' }}>
             <div className="panel-title" style={{ color: 'var(--danger)' }}><Icon name="trash" size={14} /> Опасная зона</div>

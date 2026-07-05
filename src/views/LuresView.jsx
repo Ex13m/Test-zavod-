@@ -5,6 +5,7 @@ import { useImage } from '../components/useImage'
 import Dropzone from '../components/Dropzone'
 import Icon from '../components/Icons'
 import { useShopItems } from '../components/useShopData'
+import { classifyProduct } from '../engine/agent'
 
 function LureCard({ lure, onOpen }) {
   const src = useImage(lure.imgKey)
@@ -48,6 +49,20 @@ export default function LuresView() {
       const imgKey = await saveImage(dataUrl)
       const name = f.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'Без имени'
       addLure({ name: name.charAt(0).toUpperCase() + name.slice(1), type: guessLureType(f.name), imgKey })
+      const added = useStore.getState().lures[0]
+
+      // ИИ-агент уточняет тип/бренд/название по самому фото (на деплое с ключом)
+      classifyProduct(dataUrl).then((ai) => {
+        if (!ai) return
+        const patch = {}
+        if (ai.type && ALL_TYPES[ai.type]) patch.type = ai.type
+        if (ai.name) patch.name = ai.name
+        if (ai.brand) patch.brand = ai.brand
+        if (Object.keys(patch).length) {
+          useStore.getState().updateLure(added.id, patch)
+          useStore.getState().showToast(`ИИ распознал: ${ai.name || ALL_TYPES[ai.type]?.name}`, '🤖')
+        }
+      })
     }
     showToast(`Принято на склад: ${files.length} шт.`, '🎣')
   }

@@ -183,7 +183,11 @@ export function generatePost(p) {
     url: withUtm(p.settings?.siteUrl || 'https://example.com', p.settings, p.framework),
   }
 
-  const hook = em(EMOJI.hook, style, rnd) + pick(HOOKS[p.framework] || HOOKS.aida, rnd)(ctx)
+  const ai = p.styleProfile?.ai
+  // фирменные обороты магазина (из ИИ-анализа скринов) иногда становятся крючком
+  const hook = ai?.catchphrases?.length && rnd() < 0.35
+    ? em(EMOJI.hook, style, rnd) + pick(ai.catchphrases, rnd)
+    : em(EMOJI.hook, style, rnd) + pick(HOOKS[p.framework] || HOOKS.aida, rnd)(ctx)
   let body = buildBody(p.framework, ctx, style, rnd)
   if (p.length === 'short') body = body.slice(0, 2)
   if (p.length === 'long' && p.framework !== 'fomo') {
@@ -191,7 +195,9 @@ export function generatePost(p) {
   }
   const cta = em(EMOJI.cta, style, rnd) + pick(CTAS, rnd)(ctx)
 
-  const text = [hook, ...body, cta].join('\n\n') + hashtags(ctx, style, rnd, p.settings?.shopTags)
+  // приоритет хэштегов: реальные из постов (ИИ) → теги магазина → общие
+  const tagPool = ai?.hashtags?.length ? ai.hashtags : p.settings?.shopTags
+  const text = [hook, ...body, cta].join('\n\n') + hashtags(ctx, style, rnd, tagPool)
 
   return {
     title: `${type.icon} ${type.name} «${p.lure.name}»`,
@@ -237,7 +243,10 @@ function generateFromPack(p, type, tone, rnd) {
   }
 
   const fw = pack.hooks[p.framework] ? p.framework : 'aida'
-  const hook = em(EMOJI.hook, style, rnd) + pick(pack.hooks[fw], rnd)(ctx)
+  const ai = p.styleProfile?.ai
+  const hook = ai?.catchphrases?.length && rnd() < 0.35
+    ? em(EMOJI.hook, style, rnd) + pick(ai.catchphrases, rnd)
+    : em(EMOJI.hook, style, rnd) + pick(pack.hooks[fw], rnd)(ctx)
   let body = pack.bodies[fw](ctx, helpers)
   if (p.length === 'short') body = body.slice(0, 2)
   if (p.length === 'long' || fw === 'fomo') {
@@ -247,7 +256,8 @@ function generateFromPack(p, type, tone, rnd) {
 
   let text = [hook, ...body, cta].join('\n\n')
   if (style.hashtags) {
-    const pool = p.settings?.shopTags?.length ? p.settings.shopTags : pack.hashtags
+    const pool = ai?.hashtags?.length ? ai.hashtags
+      : p.settings?.shopTags?.length ? p.settings.shopTags : pack.hashtags
     const n = Math.min(pool.length, 3 + Math.floor(rnd() * 2))
     text += '\n\n' + [...pool].sort(() => rnd() - 0.5).slice(0, n).join(' ')
   }

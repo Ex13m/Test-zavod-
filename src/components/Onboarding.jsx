@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useStore, saveImage } from '../store'
-import { analyzeShop, SCAN_STAGES } from '../engine/shopAnalyzer'
+import { analyzeShop, normalizeDomain, SCAN_STAGES } from '../engine/shopAnalyzer'
+import { analyzeShopAI } from '../engine/agent'
 import { generatePost } from '../engine/generator'
 import { analyzeScreenshot, buildStyleProfile } from '../engine/styleAnalyzer'
 import { seedDemoIfNeeded } from '../engine/seed'
@@ -36,14 +37,31 @@ export default function Onboarding() {
   }
 
   const startScan = () => {
-    const p = analyzeShop(url || 'https://www.bosset.cz/')
-    if (!p) return showToast('Похоже, это не адрес сайта — проверьте ввод', '⚠')
+    const target = url || 'https://www.bosset.cz/'
+    const heuristic = analyzeShop(target)
+    if (!heuristic) return showToast('Похоже, это не адрес сайта — проверьте ввод', '⚠')
     setStep('scan')
     setScanIdx(0)
+    // ИИ-агент читает живой HTML сайта (на деплое с ключом); эвристика — страховка
+    const aiPromise = analyzeShopAI(target).catch(() => null)
     SCAN_STAGES.forEach((_, i) => {
       timers.current.push(setTimeout(() => setScanIdx(i + 1), 700 * (i + 1)))
     })
-    timers.current.push(setTimeout(() => { setProfile(p); setStep('profile') }, 700 * SCAN_STAGES.length + 400))
+    timers.current.push(setTimeout(async () => {
+      const ai = await aiPromise
+      const p = ai
+        ? {
+            ...heuristic,
+            ...ai,
+            domain: normalizeDomain(target) || heuristic.domain,
+            url: heuristic.url,
+            aiPowered: true,
+            confidence: ai.confidence ?? 0.9,
+          }
+        : heuristic
+      setProfile(p)
+      setStep('profile')
+    }, 700 * SCAN_STAGES.length + 400))
   }
 
   const log = (line) => setSeedLog((l) => [...l, line])
@@ -168,7 +186,12 @@ export default function Onboarding() {
           <>
             <div className="panel-title"><Icon name="diamond" size={14} className="icon-gold" /> Шаг 3 · Профиль магазина</div>
             <div className="onb-profile">
-              <div className="op-name">{profile.name} <span className="tag t-acc">{profile.domain}</span></div>
+              <div className="op-name">
+                {profile.name} <span className="tag t-acc">{profile.domain}</span>{' '}
+                <span className={'tag ' + (profile.aiPowered ? 't-acc' : 't-amber')}>
+                  {profile.aiPowered ? '🤖 ИИ-анализ сайта' : 'эвристика'}
+                </span>
+              </div>
               <div className="op-row"><b>Ниша:</b> {profile.niche}</div>
               <div className="op-row"><b>Язык постов:</b> {profile.lang.toUpperCase()} · {profile.country}</div>
               <div className="op-row"><b>Аудитория:</b> {profile.audience}</div>

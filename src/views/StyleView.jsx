@@ -6,6 +6,7 @@ import { useImage } from '../components/useImage'
 import Dropzone from '../components/Dropzone'
 import Icon from '../components/Icons'
 import { useShopItems } from '../components/useShopData'
+import { analyzeStyleAI } from '../engine/agent'
 
 function Shot({ shot, scanning }) {
   const src = useImage(shot.imgKey)
@@ -26,21 +27,38 @@ export default function StyleView() {
 
   const onFiles = async (files) => {
     setScanning(true)
-    const fresh = []
+    const dataUrls = []
     for (const f of files) {
       const dataUrl = await fileToDataUrl(f, 900, 0.8)
       const features = await analyzeScreenshot(dataUrl)
       const imgKey = await saveImage(dataUrl)
-      fresh.push(features)
+      dataUrls.push(dataUrl)
       addShot({ imgKey, features })
     }
-    // профиль пересобирается по ВСЕМ скринам
+    // базовый профиль — эвристика по всем скринам
     const all = [...useStore.getState().shots.map((s) => s.features).filter(Boolean)]
+    const heuristic = buildStyleProfile(all)
     setTimeout(() => {
-      setStyleProfile(buildStyleProfile(all))
+      setStyleProfile({ ...heuristic, ...(useStore.getState().styleProfile?.ai ? { ai: useStore.getState().styleProfile.ai } : {}) })
       setScanning(false)
       showToast(`Стиль обновлён по ${all.length} скринам`, '🧬')
-    }, 1800)
+    }, 1200)
+
+    // ИИ-агент читает тексты постов по-настоящему (на деплое с ключом)
+    analyzeStyleAI(dataUrls).then((ai) => {
+      if (!ai) return
+      const cur = useStore.getState().styleProfile || heuristic
+      useStore.getState().setStyleProfile({
+        ...cur,
+        emoji: ai.emojiDensity ?? cur.emoji,
+        punch: ai.punch ?? cur.punch,
+        formality: ai.formality ?? cur.formality,
+        length: ai.length === 'short' ? 0.25 : ai.length === 'long' ? 0.9 : 0.55,
+        hashtags: (ai.hashtags?.length ?? 0) > 0 || cur.hashtags,
+        ai,
+      })
+      useStore.getState().showToast('ИИ прочитал посты и снял точный профиль стиля', '🤖')
+    })
   }
 
   const traits = styleProfile
@@ -84,8 +102,27 @@ export default function StyleView() {
                   <span className="st-name">Хэштеги</span>
                   <span className="tag t-acc">{styleProfile.hashtags ? 'добавлять' : 'не добавлять'}</span>
                 </div>
+                {styleProfile.ai && (
+                  <div className="mt-16" style={{ borderTop: '1px solid var(--stroke)', paddingTop: 12 }}>
+                    <div className="pill-note" style={{ marginBottom: 10 }}>🤖 ИИ прочитал тексты постов</div>
+                    <div style={{ fontSize: 13, color: 'var(--ink-dim)', lineHeight: 1.7 }}>
+                      <b style={{ color: 'var(--ink)' }}>Тон:</b> {styleProfile.ai.tone}<br />
+                      {styleProfile.ai.ctaStyle && <><b style={{ color: 'var(--ink)' }}>CTA:</b> {styleProfile.ai.ctaStyle}<br /></>}
+                      {styleProfile.ai.language && <><b style={{ color: 'var(--ink)' }}>Язык:</b> {styleProfile.ai.language.toUpperCase()}</>}
+                    </div>
+                    {styleProfile.ai.hashtags?.length > 0 && (
+                      <div className="chips mt-16">{styleProfile.ai.hashtags.map((t) => <span key={t} className="tag t-acc">{t}</span>)}</div>
+                    )}
+                    {styleProfile.ai.catchphrases?.length > 0 && (
+                      <div className="mt-16" style={{ fontSize: 12.5, color: 'var(--ink-faint)', fontStyle: 'italic', lineHeight: 1.7 }}>
+                        {styleProfile.ai.catchphrases.map((c) => <div key={c}>«{c}»</div>)}
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="hint" style={{ color: 'var(--ink-faint)', fontSize: 11.5, marginTop: 10 }}>
                   Эталонов в базе: {styleProfile.samples}. Профиль применяется ко всем новым постам автоматически.
+                  {!styleProfile.ai && ' Точный ИИ-разбор текстов включается на деплое с ключом (Настройки → ИИ-агент).'}
                 </div>
               </>
             )}
