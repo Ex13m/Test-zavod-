@@ -75,6 +75,16 @@ export default function App() {
 
   return (
     <>
+      {/* палитра-градиент для фирменных иконок (единый стиль) */}
+      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
+        <defs>
+          <linearGradient id="lf-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#ffc36e" />
+            <stop offset="0.55" stopColor="#ffb454" />
+            <stop offset="1" stopColor="#7fd0ff" />
+          </linearGradient>
+        </defs>
+      </svg>
       <BgHero />
       <AquaLayers />
       <FishCanvas />

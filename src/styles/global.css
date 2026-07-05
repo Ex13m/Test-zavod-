@@ -1006,8 +1006,24 @@ input[type="range"]::-webkit-slider-thumb {
 }
 @keyframes wn-timer { from { width: 100%; } to { width: 0%; } }
 
-/* ---------- иконки ---------- */
+/* ---------- иконки: единый градиентный стиль ---------- */
 .icon { flex-shrink: 0; display: block; }
+/* ключевые места — градиент янтарь→лёд с мягким свечением */
+.panel-title .icon,
+.stat-icon .icon,
+.dz-icon .icon,
+.dropzone .dz-icon,
+.hi-ph .icon,
+.es-icon .icon,
+.cs-icon .icon,
+.ch-icon .icon,
+.nav-item.active .nav-icon .icon,
+.brand-mark svg {
+  stroke: url(#lf-grad);
+  filter: drop-shadow(0 0 6px rgba(255, 180, 84, 0.35));
+}
+/* у завершённых этапов конвейера — оставляем зелёный */
+.conv-stage.done .cs-icon .icon { stroke: currentColor; filter: none; }
 .icon-gold { color: var(--acc); }
 .icon-teal { color: var(--acc-2); }
 .art-blend { mix-blend-mode: lighten; }
