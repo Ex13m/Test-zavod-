@@ -5,6 +5,7 @@ import AquaLayers from './components/AquaLayers'
 import Icon, { BrandFish } from './components/Icons'
 import Onboarding from './components/Onboarding'
 import Assistant from './components/Assistant'
+import WhatsNew from './components/WhatsNew'
 import { APP_VERSION } from './version'
 import DashboardView from './views/DashboardView'
 import LuresView from './views/LuresView'
@@ -97,6 +98,7 @@ export default function App() {
         </div>
       )}
       <Assistant />
+      {!wizardVisible && <WhatsNew />}
       {wizardVisible && <Onboarding />}
     </>
   )
