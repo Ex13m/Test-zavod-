@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useStore, saveImage, loadImage } from '../store'
 import { generatePost, FRAMEWORKS, TONES } from '../engine/generator'
+import { LANGS } from '../engine/i18n'
 import { LURE_TYPES } from '../engine/lureTypes'
 import { useImage } from '../components/useImage'
 import Icon from '../components/Icons'
@@ -27,6 +28,7 @@ export default function FactoryView() {
   const [framework, setFramework] = useState(settings.defaultFramework)
   const [tone, setTone] = useState(settings.defaultTone)
   const [length, setLength] = useState(settings.defaultLength)
+  const [lang, setLang] = useState(settings.defaultLang || 'ru')
   const [stage, setStage] = useState(-1)          // -1 = простой, иначе индекс конвейера
   const [result, setResult] = useState(null)
   const [typed, setTyped] = useState('')
@@ -68,7 +70,7 @@ export default function FactoryView() {
     timers.current.push(
       setTimeout(() => {
         const post = generatePost({
-          lure, framework, tone, length,
+          lure, framework, tone, length, lang,
           styleProfile, settings,
           seed: seedRef.current,
         })
@@ -167,6 +169,17 @@ export default function FactoryView() {
               </div>
             </div>
 
+            <div className="field">
+              <label>Язык поста</label>
+              <div className="chips">
+                {LANGS.map((l) => (
+                  <button key={l.id} className={'chip' + (lang === l.id ? ' on' : '')} onClick={() => setLang(l.id)}>
+                    {l.short} · {l.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {styleProfile?.samples > 0 && (
               <div className="pill-note" style={{ marginBottom: 14 }}>
                 🧬 Стиль скопирован с {styleProfile.samples} скринов
@@ -220,6 +233,7 @@ export default function FactoryView() {
                 <div className="post-meta-bar">
                   <span className="tag t-acc">{FRAMEWORKS[result.meta.framework]?.name}</span>
                   <span className="tag t-amber">{TONES[result.meta.tone]?.name}</span>
+                  <span className="tag t-acc">{(result.meta.lang || 'ru').toUpperCase()}</span>
                   <span className="tag">{result.meta.chars} символов</span>
                 </div>
                 <div className="row mt-16">

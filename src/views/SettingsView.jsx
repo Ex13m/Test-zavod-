@@ -1,5 +1,6 @@
 import { useStore } from '../store'
 import { FRAMEWORKS, TONES } from '../engine/generator'
+import { LANGS } from '../engine/i18n'
 import Icon from '../components/Icons'
 
 export default function SettingsView() {
@@ -72,6 +73,15 @@ export default function SettingsView() {
                 {[['short', 'Короткий'], ['medium', 'Средний'], ['long', 'Длинный']].map(([id, name]) => (
                   <button key={id} className={'chip' + (settings.defaultLength === id ? ' on' : '')}
                     onClick={() => setSettings({ defaultLength: id })}>{name}</button>
+                ))}
+              </div>
+            </div>
+            <div className="field">
+              <label>Язык постов по умолчанию</label>
+              <div className="chips">
+                {LANGS.map((l) => (
+                  <button key={l.id} className={'chip' + ((settings.defaultLang || 'ru') === l.id ? ' on' : '')}
+                    onClick={() => setSettings({ defaultLang: l.id })}>{l.short} · {l.name}</button>
                 ))}
               </div>
             </div>

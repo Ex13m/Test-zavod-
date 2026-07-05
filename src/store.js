@@ -27,6 +27,9 @@ export const useStore = create(
         setTimeout(() => set({ toast: null }), 3200)
       },
 
+      // --- демо-наполнение (один раз) ---
+      seeded: false,
+
       // --- приманки ---
       lures: [], // {id, name, type, imgKey, createdAt}
       addLure: (lure) => set((s) => ({ lures: [{ id: uid(), createdAt: Date.now(), ...lure }, ...s.lures] })),
@@ -78,6 +81,7 @@ export const useStore = create(
         defaultTone: 'friendly',
         defaultFramework: 'aida',
         defaultLength: 'medium',
+        defaultLang: 'ru',
         brandName: 'Мой магазин приманок',
         // дистрибуция
         tgToken: '',
@@ -92,6 +96,7 @@ export const useStore = create(
       name: 'lure-factory-v1',
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
+        seeded: s.seeded,
         lures: s.lures,
         shots: s.shots,
         posts: s.posts,

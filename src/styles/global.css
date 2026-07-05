@@ -67,6 +67,50 @@ body {
   pointer-events: none;
 }
 
+/* ---------- параллакс-аквариум: тени рыб + водоросли ---------- */
+.aqua {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.aqua-layer { position: absolute; inset: 0; }
+
+.swimmer {
+  position: absolute;
+  top: var(--top);
+  left: 0;
+  will-change: transform;
+}
+.swimmer.swim-ltr { animation: swim-ltr var(--dur) linear infinite; animation-delay: var(--delay); }
+.swimmer.swim-rtl { animation: swim-rtl var(--dur) linear infinite; animation-delay: var(--delay); }
+@keyframes swim-ltr {
+  from { transform: translateX(-30vw) scale(var(--s)); }
+  to   { transform: translateX(115vw) scale(var(--s)); }
+}
+@keyframes swim-rtl {
+  from { transform: translateX(115vw) scale(var(--s)) scaleX(-1); }
+  to   { transform: translateX(-30vw) scale(var(--s)) scaleX(-1); }
+}
+.swimmer-bob { animation: swim-bob var(--bobDur) ease-in-out infinite alternate; }
+@keyframes swim-bob {
+  from { transform: translateY(-10px) rotate(1.2deg); }
+  to   { transform: translateY(12px) rotate(-1.6deg); }
+}
+
+.weed {
+  position: absolute;
+  bottom: -6px;
+  transform-origin: bottom center;
+  animation: weed-sway var(--swayDur) ease-in-out infinite alternate;
+  animation-delay: var(--swayDelay);
+}
+@keyframes weed-sway {
+  from { transform: rotate(-4deg) skewX(-2deg); }
+  to   { transform: rotate(4.5deg) skewX(2.5deg); }
+}
+
 /* мерцающий градиентный фон поверх канваса */
 .aurora {
   position: fixed;

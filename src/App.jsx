@@ -1,5 +1,8 @@
+import { useEffect } from 'react'
 import { useStore } from './store'
+import { seedDemoIfNeeded } from './engine/seed'
 import FishCanvas from './components/FishCanvas'
+import AquaLayers from './components/AquaLayers'
 import Icon, { BrandFish } from './components/Icons'
 import DashboardView from './views/DashboardView'
 import LuresView from './views/LuresView'
@@ -34,8 +37,11 @@ export default function App() {
   const View = VIEWS[view] || DashboardView
   const badges = { lures: lures.length || null, history: posts.length || null }
 
+  useEffect(() => { seedDemoIfNeeded() }, [])
+
   return (
     <>
+      <AquaLayers />
       <FishCanvas />
       <div className="aurora" />
       <div className="app">
@@ -55,7 +61,7 @@ export default function App() {
             </button>
           ))}
           <div className="sidebar-foot">
-            <b>v0.2.0</b> · посты и фото хранятся локально в вашем браузере
+            <b>v0.3.0</b> · посты и фото хранятся локально в вашем браузере
           </div>
         </aside>
         <main className="main" key={view}>

@@ -3,6 +3,7 @@
 // фреймворк × тип приманки × тон × профиль стиля (из скринов).
 // ============================================================
 import { LURE_TYPES } from './lureTypes'
+import { LANG_PACKS } from './i18n'
 
 const pick = (arr, rnd) => arr[Math.floor(rnd() * arr.length)]
 
@@ -144,6 +145,11 @@ export function generatePost(p) {
   const type = LURE_TYPES[p.lure.type] || LURE_TYPES.wobbler
   const tone = TONES[p.tone] || TONES.friendly
 
+  // нерусские языки собираются из языковых пакетов
+  if (p.lang && p.lang !== 'ru' && LANG_PACKS[p.lang]) {
+    return generateFromPack(p, type, tone, rnd)
+  }
+
   const style = {
     emojiDensity: Math.min(1, (p.styleProfile?.emoji ?? 0.5) * tone.emoji),
     hashtags: p.styleProfile?.hashtags ?? true,
@@ -182,6 +188,65 @@ export function generatePost(p) {
       tone: p.tone,
       length: p.length || 'medium',
       lureType: type.id,
+      lang: 'ru',
+      chars: text.length,
+      seed: p.seed,
+    },
+  }
+}
+
+// --- генерация из языкового пакета (en / cs) ---
+function generateFromPack(p, type, tone, rnd) {
+  const pack = LANG_PACKS[p.lang]
+  const t = pack.types[type.id] || pack.types.wobbler
+  const style = {
+    emojiDensity: Math.min(1, (p.styleProfile?.emoji ?? 0.5) * tone.emoji),
+    hashtags: p.styleProfile?.hashtags ?? true,
+  }
+  const benefit = pick(t.benefits, rnd)
+  const ctx = {
+    title: p.lure.name,
+    lname: t.lname,
+    Lname: cap(t.lname),
+    fish: pick(t.fish, rnd),
+    season: pick(t.seasons, rnd),
+    benefit,
+    benefit2: pick(t.benefits.filter((b) => b !== benefit), rnd) || benefit,
+    pain: pick(t.pains, rnd),
+    proof: pick(t.proofs, rnd),
+    lex: pick(t.lexicon, rnd),
+    url: withUtm(p.settings?.siteUrl || 'https://example.com', p.settings, p.framework),
+  }
+  const helpers = {
+    cap,
+    n: 3 + Math.floor(rnd() * 7),
+    check: () => em(EMOJI.check, style, rnd) || '— ',
+  }
+
+  const fw = pack.hooks[p.framework] ? p.framework : 'aida'
+  const hook = em(EMOJI.hook, style, rnd) + pick(pack.hooks[fw], rnd)(ctx)
+  let body = pack.bodies[fw](ctx, helpers)
+  if (p.length === 'short') body = body.slice(0, 2)
+  if (p.length === 'long' || fw === 'fomo') {
+    body.push(`${em(EMOJI.urgency, style, rnd)}${pick(pack.urgency, rnd)}`)
+  }
+  const cta = em(EMOJI.cta, style, rnd) + pick(pack.ctas, rnd)(ctx)
+
+  let text = [hook, ...body, cta].join('\n\n')
+  if (style.hashtags) {
+    const n = 3 + Math.floor(rnd() * 2)
+    text += '\n\n' + [...pack.hashtags].sort(() => rnd() - 0.5).slice(0, n).join(' ')
+  }
+
+  return {
+    title: `${type.icon} ${cap(t.lname)} ${pack.quotes[0]}${p.lure.name}${pack.quotes[1]}`,
+    text,
+    meta: {
+      framework: p.framework,
+      tone: p.tone,
+      length: p.length || 'medium',
+      lureType: type.id,
+      lang: p.lang,
       chars: text.length,
       seed: p.seed,
     },
