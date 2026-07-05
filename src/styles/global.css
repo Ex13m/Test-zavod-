@@ -168,7 +168,9 @@ body {
   background: var(--acc);
   box-shadow: 0 0 12px var(--acc);
 }
-.nav-icon { font-size: 18px; width: 24px; text-align: center; }
+.nav-icon { width: 24px; display: grid; place-items: center; color: var(--ink-faint); transition: color 0.25s; }
+.nav-item:hover .nav-icon { color: var(--acc); }
+.nav-item.active .nav-icon { color: var(--acc-2); filter: drop-shadow(0 0 6px rgba(251,191,36,0.5)); }
 .nav-badge {
   margin-left: auto;
   font-family: var(--font-mono);
@@ -199,12 +201,35 @@ body {
   z-index: 1;
 }
 
-.view-head { margin-bottom: 26px; animation: view-in 0.5s var(--ease-spring); }
+.view-head { margin-bottom: 26px; animation: view-in 0.5s var(--ease-spring); position: relative; }
+/* ар-деко солнце-веер за заголовком */
+.view-head::before {
+  content: '';
+  position: absolute;
+  left: -60px; top: -70px;
+  width: 300px; height: 220px;
+  background: repeating-conic-gradient(from -40deg at 40px 40px,
+    rgba(251, 191, 36, 0.05) 0deg 2deg, transparent 2deg 14deg);
+  -webkit-mask-image: radial-gradient(circle at 40px 40px, #000, transparent 70%);
+  mask-image: radial-gradient(circle at 40px 40px, #000, transparent 70%);
+  pointer-events: none;
+}
 .view-title {
   font-family: var(--font-display);
   font-size: 26px;
   font-weight: 800;
   letter-spacing: 0.01em;
+  position: relative;
+}
+.view-title::after {
+  content: '';
+  display: block;
+  margin-top: 10px;
+  width: 130px;
+  height: 3px;
+  background:
+    linear-gradient(90deg, var(--acc-2), transparent) 0 0 / 100% 1px no-repeat,
+    linear-gradient(90deg, var(--acc), transparent) 0 100% / 60% 1px no-repeat;
 }
 .view-title .glow { color: var(--acc); text-shadow: 0 0 24px rgba(45,212,191,0.5); }
 .view-sub { color: var(--ink-dim); margin-top: 8px; font-size: 14px; max-width: 640px; line-height: 1.55; }
@@ -215,6 +240,29 @@ body {
   to   { opacity: 1; transform: none; }
 }
 
+/* ---------- иконки «Зигфелд» ---------- */
+.icon { flex-shrink: 0; display: block; }
+.icon-gold { color: var(--acc-2); }
+.icon-teal { color: var(--acc); }
+
+/* ар-деко разделитель: линия ◆ линия */
+.deco-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 18px;
+  color: rgba(251, 191, 36, 0.55);
+}
+.deco-divider::before, .deco-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.35));
+}
+.deco-divider::after {
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.35), transparent);
+}
+
 /* ---------- панели / карточки ---------- */
 .panel {
   background: var(--bg-panel);
@@ -223,6 +271,15 @@ body {
   padding: 22px;
   backdrop-filter: blur(14px);
   position: relative;
+}
+/* двойная ар-деко рамка: тонкий золотой кант внутри */
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(251, 191, 36, 0.09);
+  border-radius: calc(var(--r-lg) - 6px);
+  pointer-events: none;
 }
 .panel-title {
   font-family: var(--font-display);

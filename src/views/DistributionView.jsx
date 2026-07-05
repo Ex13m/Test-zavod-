@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useStore, loadImage } from '../store'
 import { CHANNELS, WEBHOOK_PRESETS, publishToTelegram, publishToWebhook } from '../engine/distribution'
+import Icon from '../components/Icons'
 
 export default function DistributionView() {
   const { posts, channels, toggleChannel, settings, setSettings, markPublished, showToast } = useStore()
@@ -33,7 +34,7 @@ export default function DistributionView() {
     }
     for (const ch of CHANNELS.filter((c) => !c.real)) {
       if (channels[ch.id]) {
-        pushLog(`${ch.icon} ${ch.name}: 🧪 заглушка — пост поставлен в очередь (API в дорожной карте)`)
+        pushLog(`🧪 ${ch.name}: заглушка — пост поставлен в очередь (API в дорожной карте)`)
         markPublished(post.id, ch.name)
       }
     }
@@ -54,10 +55,10 @@ export default function DistributionView() {
       <div className="view-body grid-main">
         <div>
           <div className="panel">
-            <div className="panel-title">📡 Каналы</div>
+            <div className="panel-title"><Icon name="tower" size={14} className="icon-gold" /> Каналы</div>
             {CHANNELS.map((ch) => (
               <div key={ch.id} className="channel-card" style={{ marginBottom: 10 }}>
-                <div className="ch-icon">{ch.icon}</div>
+                <div className="ch-icon" style={{ color: ch.real ? 'var(--acc)' : 'var(--ink-dim)' }}><Icon name={ch.icon} size={22} /></div>
                 <div>
                   <div className="ch-name">{ch.name} {!ch.real && <span className="tag" style={{ marginLeft: 6 }}>скоро</span>}</div>
                   <div className="ch-status">{ch.note}</div>
@@ -74,7 +75,7 @@ export default function DistributionView() {
         <div>
           <div className="grid-2">
             <div className="panel">
-              <div className="panel-title">✈️ Telegram</div>
+              <div className="panel-title"><Icon name="plane" size={14} className="icon-gold" /> Telegram</div>
               <div className="field">
                 <label>Токен бота</label>
                 <input
@@ -94,7 +95,7 @@ export default function DistributionView() {
             </div>
 
             <div className="panel">
-              <div className="panel-title">🔗 Автопостинг</div>
+              <div className="panel-title"><Icon name="link" size={14} className="icon-gold" /> Автопостинг</div>
               <div className="field">
                 <label>Сервис</label>
                 <div className="chips">
@@ -122,7 +123,7 @@ export default function DistributionView() {
           </div>
 
           <div className="panel mt-20">
-            <div className="panel-title">🚀 Отправка</div>
+            <div className="panel-title"><Icon name="send" size={14} className="icon-gold" /> Отправка</div>
             <div className="field">
               <label>Пост со склада</label>
               <select value={postId} onChange={(e) => setPostId(e.target.value)}>

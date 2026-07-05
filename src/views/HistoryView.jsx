@@ -3,6 +3,7 @@ import { useStore } from '../store'
 import { FRAMEWORKS } from '../engine/generator'
 import { LURE_TYPES } from '../engine/lureTypes'
 import { useImage } from '../components/useImage'
+import Icon from '../components/Icons'
 
 function HistoryItem({ post, onCopy }) {
   const src = useImage(post.imgKey)
@@ -12,7 +13,7 @@ function HistoryItem({ post, onCopy }) {
 
   return (
     <div className="history-item">
-      {src ? <img src={src} alt="" /> : <div className="hi-ph">📝</div>}
+      {src ? <img src={src} alt="" /> : <div className="hi-ph" style={{ color: 'var(--acc)' }}><Icon name="quill" size={30} /></div>}
       <div style={{ minWidth: 0 }}>
         <div className="hi-title">{post.title}</div>
         <div className="hi-text" style={open ? { WebkitLineClamp: 'unset', whiteSpace: 'pre-wrap' } : {}}>
@@ -26,10 +27,10 @@ function HistoryItem({ post, onCopy }) {
         </div>
       </div>
       <div className="hi-actions">
-        <button className="btn sm" onClick={() => onCopy(post)}>📋</button>
-        <button className="btn sm ghost" onClick={() => setOpen(!open)}>{open ? '▲' : '▼'}</button>
-        <button className="btn sm ghost" title="К дистрибуции" onClick={() => { useStore.setState({ distPostId: post.id }); setView('distribution') }}>📡</button>
-        <button className="btn sm danger" onClick={() => removePost(post.id)}>🗑</button>
+        <button className="btn sm" title="Копировать" onClick={() => onCopy(post)}><Icon name="copy" size={15} /></button>
+        <button className="btn sm ghost" title="Развернуть" onClick={() => setOpen(!open)}><Icon name={open ? 'collapse' : 'expand'} size={15} /></button>
+        <button className="btn sm ghost" title="К дистрибуции" onClick={() => { useStore.setState({ distPostId: post.id }); setView('distribution') }}><Icon name="tower" size={15} /></button>
+        <button className="btn sm danger" title="Удалить" onClick={() => removePost(post.id)}><Icon name="trash" size={15} /></button>
       </div>
     </div>
   )
@@ -71,11 +72,11 @@ export default function HistoryView() {
             })}
           </div>
           <div className="spacer" />
-          {posts.length > 0 && <button className="btn ghost sm" onClick={exportAll}>⬇️ Экспорт JSON</button>}
+          {posts.length > 0 && <button className="btn ghost sm" onClick={exportAll}><Icon name="download" size={15} /> Экспорт JSON</button>}
         </div>
         {filtered.length === 0 ? (
           <div className="empty-state panel">
-            <span className="es-icon">📭</span>
+            <span className="es-icon" style={{ color: 'var(--acc)' }}><Icon name="archive" size={44} style={{ margin: '0 auto' }} /></span>
             <div className="es-text">Здесь появятся выпущенные посты.</div>
           </div>
         ) : (

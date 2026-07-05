@@ -4,13 +4,14 @@ import { fileToDataUrl } from '../engine/imageUtil'
 import { analyzeScreenshot, buildStyleProfile, TRAIT_LABELS } from '../engine/styleAnalyzer'
 import { useImage } from '../components/useImage'
 import Dropzone from '../components/Dropzone'
+import Icon from '../components/Icons'
 
 function Shot({ shot, scanning }) {
   const src = useImage(shot.imgKey)
   const { removeShot } = useStore()
   return (
     <div className={'shot-card' + (scanning ? ' scanning' : '')}>
-      {src ? <img src={src} alt="" /> : <div className="hi-ph" style={{ width: '100%', height: 170 }}>🖼️</div>}
+      {src ? <img src={src} alt="" /> : <div className="hi-ph" style={{ width: '100%', height: 170, color: 'var(--acc)' }}><Icon name="image" size={30} /></div>}
       <div className="sc-scan" />
       <button className="sc-del" onClick={() => removeShot(shot.id)}>✕</button>
     </div>
@@ -56,16 +57,16 @@ export default function StyleView() {
       <div className="view-body grid-main">
         <div>
           <Dropzone
-            icon="🖼️"
+            icon={<Icon name="image" size={40} style={{ margin: '0 auto', color: 'var(--acc)' }} />}
             title="Скрины эталонных постов — сюда"
             sub="Завод изучит подачу: плотность эмодзи, длину, рубленость фраз"
             onFiles={onFiles}
           />
           <div className="panel mt-20">
-            <div className="panel-title">🧬 Профиль повествования</div>
+            <div className="panel-title"><Icon name="fan" size={14} className="icon-gold" /> Профиль повествования</div>
             {!styleProfile || !styleProfile.samples ? (
               <div className="empty-state">
-                <span className="es-icon">🫥</span>
+                <span className="es-icon" style={{ color: 'var(--ink-dim)' }}><Icon name="fan" size={44} style={{ margin: '0 auto' }} /></span>
                 <div className="es-text">Профиль пока не снят — завод пишет в нейтральной манере.</div>
               </div>
             ) : (
@@ -89,10 +90,10 @@ export default function StyleView() {
           </div>
         </div>
         <div className="panel">
-          <div className="panel-title">🗂️ Эталонные скрины</div>
+          <div className="panel-title"><Icon name="image" size={14} className="icon-gold" /> Эталонные скрины</div>
           {shots.length === 0 ? (
             <div className="empty-state">
-              <span className="es-icon">📭</span>
+              <span className="es-icon" style={{ color: 'var(--ink-dim)' }}><Icon name="image" size={44} style={{ margin: '0 auto' }} /></span>
               <div className="es-text">Библиотека эталонов пуста.</div>
             </div>
           ) : (

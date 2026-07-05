@@ -1,23 +1,24 @@
 import { useStore } from '../store'
 import { FRAMEWORKS } from '../engine/generator'
 import { LURE_TYPES } from '../engine/lureTypes'
+import Icon from '../components/Icons'
 
 export default function DashboardView() {
   const { lures, posts, shots, styleProfile, setView, settings } = useStore()
   const published = posts.filter((p) => p.published?.length).length
 
   const stats = [
-    { icon: '🎣', val: lures.length, label: 'Приманок на складе', glow: 'rgba(45,212,191,0.16)' },
-    { icon: '📝', val: posts.length, label: 'Постов произведено', glow: 'rgba(251,191,36,0.14)' },
-    { icon: '🚀', val: published, label: 'Отправлено в каналы', glow: 'rgba(244,114,182,0.14)' },
-    { icon: '🧬', val: shots.length, label: 'Скринов стиля изучено', glow: 'rgba(129,140,248,0.16)' },
+    { icon: 'hook', c: 'var(--acc)', val: lures.length, label: 'Приманок на складе', glow: 'rgba(45,212,191,0.16)' },
+    { icon: 'quill', c: 'var(--acc-2)', val: posts.length, label: 'Постов произведено', glow: 'rgba(251,191,36,0.14)' },
+    { icon: 'send', c: 'var(--acc-3)', val: published, label: 'Отправлено в каналы', glow: 'rgba(244,114,182,0.14)' },
+    { icon: 'fan', c: 'var(--acc-4)', val: shots.length, label: 'Скринов стиля изучено', glow: 'rgba(129,140,248,0.16)' },
   ]
 
   const steps = [
-    { icon: '📸', t: 'Загрузите фото приманок', d: 'Завод определит тип и заведёт карточку', v: 'lures' },
-    { icon: '🖼️', t: 'Скормите скрины постов', d: 'Эвристика скопирует стиль повествования', v: 'style' },
-    { icon: '🏭', t: 'Запустите конвейер', d: 'Воронка: крючок → выгоды → доказательство → CTA', v: 'factory' },
-    { icon: '📡', t: 'Разошлите по каналам', d: 'Telegram + автопостинг по вебхуку', v: 'distribution' },
+    { icon: 'camera', t: 'Загрузите фото приманок', d: 'Завод определит тип и заведёт карточку', v: 'lures' },
+    { icon: 'image', t: 'Скормите скрины постов', d: 'Эвристика скопирует стиль повествования', v: 'style' },
+    { icon: 'factory', t: 'Запустите конвейер', d: 'Воронка: крючок → выгоды → доказательство → CTA', v: 'factory' },
+    { icon: 'tower', t: 'Разошлите по каналам', d: 'Telegram + автопостинг по вебхуку', v: 'distribution' },
   ]
 
   return (
@@ -33,7 +34,7 @@ export default function DashboardView() {
         <div className="stat-row">
           {stats.map((s) => (
             <div key={s.label} className="stat-tile" style={{ '--tile-glow': s.glow }}>
-              <span className="stat-icon">{s.icon}</span>
+              <span className="stat-icon" style={{ color: s.c }}><Icon name={s.icon} size={22} /></span>
               <div className="stat-val">{s.val}</div>
               <div className="stat-label">{s.label}</div>
             </div>
@@ -42,7 +43,7 @@ export default function DashboardView() {
 
         <div className="grid-2">
           <div className="panel">
-            <div className="panel-title">⚙️ Технологическая цепочка</div>
+            <div className="panel-title"><Icon name="factory" size={14} className="icon-gold" /> Технологическая цепочка</div>
             {steps.map((s, i) => (
               <div
                 key={s.t}
@@ -50,7 +51,7 @@ export default function DashboardView() {
                 style={{ gridTemplateColumns: '52px 1fr auto', cursor: 'pointer' }}
                 onClick={() => setView(s.v)}
               >
-                <div className="hi-ph" style={{ width: 52, height: 52, fontSize: 22 }}>{s.icon}</div>
+                <div className="hi-ph" style={{ width: 52, height: 52, color: 'var(--acc)' }}><Icon name={s.icon} size={24} /></div>
                 <div>
                   <div className="hi-title">{i + 1}. {s.t}</div>
                   <div className="hi-text">{s.d}</div>
@@ -61,16 +62,16 @@ export default function DashboardView() {
           </div>
 
           <div className="panel">
-            <div className="panel-title">🕐 Последние выпуски</div>
+            <div className="panel-title"><Icon name="archive" size={14} className="icon-gold" /> Последние выпуски</div>
             {posts.length === 0 ? (
               <div className="empty-state">
-                <span className="es-icon">🐟</span>
+                <span className="es-icon" style={{ color: 'var(--acc)' }}><Icon name="bubble" size={44} style={{ margin: '0 auto' }} /></span>
                 <div className="es-text">
                   Цеха простаивают — ни одного поста ещё не выпущено.<br />
                   Загрузите приманку и запустите конвейер.
                 </div>
                 <button className="btn primary mt-20" onClick={() => setView('lures')}>
-                  🎣 Загрузить первую приманку
+                  <Icon name="hook" size={16} /> Загрузить первую приманку
                 </button>
               </div>
             ) : (
@@ -96,7 +97,7 @@ export default function DashboardView() {
 
         {styleProfile?.samples > 0 && (
           <div className="panel mt-20">
-            <div className="panel-title">🧬 Профиль стиля активен</div>
+            <div className="panel-title"><Icon name="fan" size={14} className="icon-gold" /> Профиль стиля активен</div>
             <div className="row">
               <span className="pill-note">✨ Завод пишет с оглядкой на {styleProfile.samples} эталонных скринов</span>
               <button className="btn ghost sm" onClick={() => setView('style')}>Настроить стиль</button>

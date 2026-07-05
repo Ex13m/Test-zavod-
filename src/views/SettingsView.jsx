@@ -1,5 +1,6 @@
 import { useStore } from '../store'
 import { FRAMEWORKS, TONES } from '../engine/generator'
+import Icon from '../components/Icons'
 
 export default function SettingsView() {
   const { settings, setSettings, showToast } = useStore()
@@ -19,7 +20,7 @@ export default function SettingsView() {
       </div>
       <div className="view-body grid-2">
         <div className="panel">
-          <div className="panel-title">🎯 Воронка и трафик</div>
+          <div className="panel-title"><Icon name="funnel" size={14} className="icon-gold" /> Воронка и трафик</div>
           <div className="field">
             <label>Название бренда / магазина</label>
             <input type="text" value={settings.brandName} onChange={(e) => setSettings({ brandName: e.target.value })} />
@@ -46,7 +47,7 @@ export default function SettingsView() {
 
         <div>
           <div className="panel">
-            <div className="panel-title">🧾 Рецептура по умолчанию</div>
+            <div className="panel-title"><Icon name="quill" size={14} className="icon-gold" /> Рецептура по умолчанию</div>
             <div className="field">
               <label>Формула воронки</label>
               <div className="chips">
@@ -80,8 +81,8 @@ export default function SettingsView() {
           </div>
 
           <div className="panel mt-20" style={{ borderColor: 'rgba(251,113,133,0.25)' }}>
-            <div className="panel-title" style={{ color: 'var(--danger)' }}>☢️ Опасная зона</div>
-            <button className="btn danger sm" onClick={clearAll}>🗑 Полный сброс завода</button>
+            <div className="panel-title" style={{ color: 'var(--danger)' }}><Icon name="trash" size={14} /> Опасная зона</div>
+            <button className="btn danger sm" onClick={clearAll}><Icon name="trash" size={15} /> Полный сброс завода</button>
           </div>
         </div>
       </div>

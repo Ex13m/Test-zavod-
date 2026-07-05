@@ -3,13 +3,14 @@ import { LURE_TYPE_LIST, LURE_TYPES, guessLureType } from '../engine/lureTypes'
 import { fileToDataUrl } from '../engine/imageUtil'
 import { useImage } from '../components/useImage'
 import Dropzone from '../components/Dropzone'
+import Icon from '../components/Icons'
 
 function LureCard({ lure, onOpen }) {
   const src = useImage(lure.imgKey)
   const { removeLure, updateLure } = useStore()
   return (
     <div className="lure-card" onClick={() => onOpen(lure)}>
-      {src ? <img src={src} alt={lure.name} /> : <div className="hi-ph" style={{ width: '100%', height: 130, borderRadius: 0 }}>🎣</div>}
+      {src ? <img src={src} alt={lure.name} /> : <div className="hi-ph" style={{ width: '100%', height: 130, borderRadius: 0, color: 'var(--acc)' }}><Icon name="hook" size={36} /></div>}
       <button
         className="lc-del"
         title="Удалить"
@@ -60,7 +61,7 @@ export default function LuresView() {
       </div>
       <div className="view-body">
         <Dropzone
-          icon="🎣"
+          icon={<Icon name="hook" size={40} style={{ margin: '0 auto', color: 'var(--acc)' }} />}
           title="Перетащите фото приманок или кликните"
           sub="JPG · PNG · WEBP — можно пачкой, завод всё переварит"
           onFiles={onFiles}
@@ -68,7 +69,7 @@ export default function LuresView() {
         <div className="mt-20">
           {lures.length === 0 ? (
             <div className="empty-state">
-              <span className="es-icon">🪝</span>
+              <span className="es-icon" style={{ color: 'var(--acc)' }}><Icon name="hook" size={44} style={{ margin: '0 auto' }} /></span>
               <div className="es-text">Склад пуст. Первая партия приманок ждёт загрузки.</div>
             </div>
           ) : (

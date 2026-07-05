@@ -7,12 +7,12 @@
 // ============================================================
 
 export const CHANNELS = [
-  { id: 'telegram', name: 'Telegram', icon: '✈️', real: true, note: 'Bot API через Netlify Function' },
-  { id: 'webhook', name: 'Автопостинг (вебхук)', icon: '🔗', real: true, note: 'n8n · Make · Zapier · Albato' },
-  { id: 'vk', name: 'ВКонтакте', icon: '🔵', real: false, note: 'API-интеграция — в дорожной карте' },
-  { id: 'dzen', name: 'Дзен', icon: '🟠', real: false, note: 'API-интеграция — в дорожной карте' },
-  { id: 'instagram', name: 'Instagram*', icon: '📸', real: false, note: 'через Graph API — в дорожной карте' },
-  { id: 'ok', name: 'Одноклассники', icon: '🟧', real: false, note: 'API-интеграция — в дорожной карте' },
+  { id: 'telegram', name: 'Telegram', icon: 'plane', real: true, note: 'Bot API через Netlify Function' },
+  { id: 'webhook', name: 'Автопостинг (вебхук)', icon: 'link', real: true, note: 'n8n · Make · Zapier · Albato' },
+  { id: 'vk', name: 'ВКонтакте', icon: 'vk', real: false, note: 'API-интеграция — в дорожной карте' },
+  { id: 'dzen', name: 'Дзен', icon: 'dzen', real: false, note: 'API-интеграция — в дорожной карте' },
+  { id: 'instagram', name: 'Instagram*', icon: 'insta', real: false, note: 'через Graph API — в дорожной карте' },
+  { id: 'ok', name: 'Одноклассники', icon: 'ok', real: false, note: 'API-интеграция — в дорожной карте' },
 ]
 
 export const WEBHOOK_PRESETS = [

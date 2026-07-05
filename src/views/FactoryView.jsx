@@ -3,14 +3,15 @@ import { useStore, saveImage, loadImage } from '../store'
 import { generatePost, FRAMEWORKS, TONES } from '../engine/generator'
 import { LURE_TYPES } from '../engine/lureTypes'
 import { useImage } from '../components/useImage'
+import Icon from '../components/Icons'
 
 const STAGES = [
-  { icon: '📸', label: 'Приёмка фото' },
-  { icon: '🔬', label: 'Анализ приманки' },
-  { icon: '🧬', label: 'Профиль стиля' },
-  { icon: '✍️', label: 'Копирайт-цех' },
-  { icon: '🌪️', label: 'Сборка воронки' },
-  { icon: '📦', label: 'Выпуск' },
+  { icon: 'camera', label: 'Приёмка фото' },
+  { icon: 'lens', label: 'Анализ приманки' },
+  { icon: 'fan', label: 'Профиль стиля' },
+  { icon: 'pen', label: 'Копирайт-цех' },
+  { icon: 'funnel', label: 'Сборка воронки' },
+  { icon: 'cube', label: 'Выпуск' },
 ]
 
 const LENGTHS = [
@@ -105,7 +106,7 @@ export default function FactoryView() {
       <div className="view-body grid-main">
         <div>
           <div className="panel">
-            <div className="panel-title">🧾 Рецептура поста</div>
+            <div className="panel-title"><Icon name="quill" size={14} className="icon-gold" /> Рецептура поста</div>
 
             <div className="field">
               <label>Приманка</label>
@@ -180,13 +181,15 @@ export default function FactoryView() {
 
         <div>
           <div className="panel">
-            <div className="panel-title">🏭 Линия сборки</div>
+            <div className="panel-title"><Icon name="factory" size={14} className="icon-gold" /> Линия сборки</div>
             <div className="conveyor">
               {STAGES.map((s, i) => (
                 <div key={s.label} style={{ display: 'contents' }}>
                   {i > 0 && <div className={'conv-link' + (stage === i ? ' flow' : '')} />}
                   <div className={'conv-stage' + (stage === i ? ' active' : '') + (stage > i ? ' done' : '')}>
-                    <div className="cs-icon">{stage > i ? '✓' : s.icon}</div>
+                    <div className="cs-icon" style={{ color: stage > i ? 'var(--ok)' : stage === i ? 'var(--acc)' : 'var(--ink-dim)' }}>
+                      <Icon name={stage > i ? 'check' : s.icon} size={22} />
+                    </div>
                     <div className="cs-label">{s.label}</div>
                   </div>
                 </div>
@@ -195,10 +198,10 @@ export default function FactoryView() {
           </div>
 
           <div className="panel mt-20">
-            <div className="panel-title">📄 Готовый пост</div>
+            <div className="panel-title"><Icon name="cube" size={14} className="icon-gold" /> Готовый пост</div>
             {!result && stage === -1 && (
               <div className="empty-state">
-                <span className="es-icon">🫧</span>
+                <span className="es-icon" style={{ color: 'var(--acc)' }}><Icon name="bubble" size={44} style={{ margin: '0 auto' }} /></span>
                 <div className="es-text">Пресс-формы чистые, чернила заправлены.<br />Жмите «Запустить конвейер».</div>
               </div>
             )}
