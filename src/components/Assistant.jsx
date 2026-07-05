@@ -16,17 +16,17 @@ function CaptainSvg({ size = 84 }) {
     <svg viewBox="0 0 148 126" width={size} height={size} className="captain" aria-hidden="true">
       <defs>
         <linearGradient id="cpt-body" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#3d6577" />
-          <stop offset="0.55" stopColor="#24485c" />
-          <stop offset="1" stopColor="#14262f" />
+          <stop offset="0" stopColor="#6f95ad" />
+          <stop offset="0.55" stopColor="#39607a" />
+          <stop offset="1" stopColor="#1b3345" />
         </linearGradient>
         <linearGradient id="cpt-belly" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="rgba(232,244,244,0)" />
           <stop offset="1" stopColor="rgba(232,244,244,0.35)" />
         </linearGradient>
         <linearGradient id="cpt-fin" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f57633" />
-          <stop offset="1" stopColor="#c43e0d" />
+          <stop offset="0" stopColor="#ffc36e" />
+          <stop offset="1" stopColor="#e08a2e" />
         </linearGradient>
         <linearGradient id="cpt-spine" x1="0" y1="1" x2="0" y2="0">
           <stop offset="0" stopColor="rgba(246,196,83,0.25)" />

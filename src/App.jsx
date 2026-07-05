@@ -49,6 +49,7 @@ export default function App() {
 
   return (
     <>
+      <div className="bg-hero" aria-hidden="true" />
       <AquaLayers />
       <FishCanvas />
       <div className="aurora" />
