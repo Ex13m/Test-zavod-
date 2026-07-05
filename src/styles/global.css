@@ -108,6 +108,23 @@ body {
   to   { transform: rotate(4deg) skewX(2deg); }
 }
 
+/* волнообразные полосы */
+.wave-band {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+.wave-band svg {
+  display: block;
+  animation: wave-slide var(--waveDur) linear infinite;
+}
+@keyframes wave-slide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 /* тёплые лучи сверху + холод глубины */
 .aurora {
   position: fixed;

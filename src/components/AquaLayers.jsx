@@ -4,13 +4,16 @@
 // 3 параллакс-слоях с разными скоростями/масштабами/blur;
 // на каждом слое — плавно покачивающиеся водоросли.
 // ============================================================
+import { ART } from '../art'
+import SmartImg from './SmartImg'
 
 // Рыбы фона: графика тем же штрихом, что и иконки — хвосты и
 // плавники с лучами, дуги чешуи, жаберная линия, кольцо глаза.
 // Заливка полупрозрачная, контур читается. (Замещаются растровым
 // артом Higgsfield, когда он доступен — см. ART ниже.)
-const S = { fill: 'currentColor', fillOpacity: 0.16, stroke: 'currentColor', strokeOpacity: 0.75, strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }
-const LINES = { fill: 'none', stroke: 'currentColor', strokeOpacity: 0.55, strokeWidth: 1.3, strokeLinecap: 'round' }
+// Монолитные силуэты (как на референсе): цельная заливка, без контура и деталей
+const S = { fill: 'currentColor', stroke: 'none' }
+const LINES = { fill: 'none', stroke: 'none' }
 
 const FISH = {
   pike: ( // щука — стрела с «утиным» носом, плавники смещены к хвосту
@@ -80,9 +83,15 @@ function Fish({ kind, top, dur, delay, scale, dir, drift }) {
       }}
     >
       <div className="swimmer-bob">
-        <svg viewBox="0 0 240 115" width="240" height="115" fill="none" aria-hidden="true">
-          {FISH[kind]}
-        </svg>
+        <SmartImg
+          srcs={ART.silhouettes[kind] || []}
+          style={{ width: 240, height: 'auto', opacity: 0.9 }}
+          fallback={
+            <svg viewBox="0 0 240 115" width="240" height="115" fill="none" aria-hidden="true">
+              {FISH[kind]}
+            </svg>
+          }
+        />
       </div>
     </div>
   )
@@ -150,9 +159,30 @@ const LAYERS = [
   },
 ]
 
+// Волнообразные цветовые полосы (как на референсе troutarea)
+function Waves() {
+  const bands = [
+    { top: '30%', o: 0.05, dur: '46s', h: 260 },
+    { top: '48%', o: 0.07, dur: '38s', h: 280 },
+    { top: '64%', o: 0.09, dur: '30s', h: 300 },
+    { top: '78%', o: 0.12, dur: '24s', h: 320 },
+  ]
+  return bands.map((b, i) => (
+    <div key={i} className="wave-band" style={{ top: b.top, opacity: b.o, '--waveDur': b.dur, height: b.h }}>
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none" width="200%" height="100%">
+        <path
+          fill="#8fb2d0"
+          d="M0 60 C 100 20, 200 20, 300 60 C 400 100, 500 100, 600 60 C 700 20, 800 20, 900 60 C 1000 100, 1100 100, 1200 60 L1200 120 L0 120 Z"
+        />
+      </svg>
+    </div>
+  ))
+}
+
 export default function AquaLayers() {
   return (
     <div className="aqua" aria-hidden="true">
+      <Waves />
       {LAYERS.map((L) => (
         <div
           key={L.z}

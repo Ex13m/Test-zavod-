@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useStore } from './store'
 import FishCanvas from './components/FishCanvas'
 import AquaLayers from './components/AquaLayers'
@@ -7,6 +7,25 @@ import Onboarding from './components/Onboarding'
 import Assistant from './components/Assistant'
 import WhatsNew from './components/WhatsNew'
 import { APP_VERSION } from './version'
+import { ART } from './art'
+
+// Фон: пробуем локальный файл, затем CDN Higgsfield; ничего не вышло — градиенты
+function BgHero() {
+  const [src, setSrc] = React.useState(null)
+  React.useEffect(() => {
+    let alive = true
+    const tryNext = (i) => {
+      if (!alive || i >= ART.bg.length) return
+      const img = new Image()
+      img.onload = () => alive && setSrc(ART.bg[i])
+      img.onerror = () => tryNext(i + 1)
+      img.src = ART.bg[i]
+    }
+    tryNext(0)
+    return () => { alive = false }
+  }, [])
+  return <div className="bg-hero" aria-hidden="true" style={src ? { backgroundImage: `url(${src})` } : { backgroundImage: 'none' }} />
+}
 import DashboardView from './views/DashboardView'
 import LuresView from './views/LuresView'
 import FactoryView from './views/FactoryView'
@@ -49,7 +68,7 @@ export default function App() {
 
   return (
     <>
-      <div className="bg-hero" aria-hidden="true" />
+      <BgHero />
       <AquaLayers />
       <FishCanvas />
       <div className="aurora" />

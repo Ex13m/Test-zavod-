@@ -26,7 +26,7 @@ export default function FactoryView() {
   const { settings, styleProfile, addPost, showToast, setView } = useStore()
   const lures = useShopItems('lures')
   const factoryLureId = useStore((s) => s.factoryLureId)
-  const [lureId, setLureId] = useState(factoryLureId || lures[0]?.id || '')
+  const lureId = factoryLureId || lures[0]?.id || ''
   const [framework, setFramework] = useState(settings.defaultFramework)
   const [tone, setTone] = useState(settings.defaultTone)
   const [length, setLength] = useState(settings.defaultLength)
@@ -42,9 +42,6 @@ export default function FactoryView() {
   const lureImg = useImage(lure?.imgKey)
 
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
-  useEffect(() => {
-    if (factoryLureId) setLureId(factoryLureId)
-  }, [factoryLureId])
 
   // печатающийся текст
   useEffect(() => {
@@ -113,20 +110,22 @@ export default function FactoryView() {
             <div className="panel-title"><Icon name="quill" size={14} className="icon-gold" /> Рецептура поста</div>
 
             <div className="field">
-              <label>Товар</label>
-              <select value={lureId} onChange={(e) => setLureId(e.target.value)}>
-                <option value="">— выбрать со склада —</option>
-                {lures.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name} · {ALL_TYPES[l.type]?.name}
-                  </option>
-                ))}
-              </select>
-              {lures.length === 0 && (
+              <label>Товар — определён автоматически</label>
+              {lure ? (
+                <div className="row" style={{ gap: 8 }}>
+                  <span className="tag t-acc">{ALL_TYPES[lure.type]?.name}</span>
+                  <b style={{ fontSize: 14 }}>{lure.name}</b>
+                  {lure.brand && <span className="tag">{lure.brand}</span>}
+                  <span className="spacer" />
+                  <button className="btn ghost sm" onClick={() => setView('lures')}>Сменить</button>
+                </div>
+              ) : (
                 <div className="hint">
-                  Склад пуст — <a style={{ color: 'var(--acc)', cursor: 'pointer' }} onClick={() => setView('lures')}>загрузите фото приманок</a>
+                  Склад пуст — <a style={{ color: 'var(--acc)', cursor: 'pointer' }} onClick={() => setView('lures')}>загрузите фото товара</a>,
+                  агент сам определит, что это, и конвейер соберёт пост под него.
                 </div>
               )}
+              <div className="hint">Тип и название распознаёт ИИ-агент при загрузке фото; берётся последний товар или выбранный на складе.</div>
             </div>
 
             {lureImg && (
