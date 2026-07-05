@@ -64,8 +64,8 @@ export default function FishCanvas() {
       for (let i = 0; i < 4; i++) {
         const bx = W * (0.15 + i * 0.24) + Math.sin(t * 0.003 + i * 2) * 60
         const grad = ctx.createLinearGradient(bx, 0, bx + 180, H)
-        grad.addColorStop(0, `rgba(94, 234, 212, ${0.035 + Math.sin(t * 0.008 + i) * 0.015})`)
-        grad.addColorStop(1, 'rgba(94, 234, 212, 0)')
+        grad.addColorStop(0, `rgba(44, 95, 138, ${0.03 + Math.sin(t * 0.008 + i) * 0.012})`)
+        grad.addColorStop(1, 'rgba(44, 95, 138, 0)')
         ctx.fillStyle = grad
         ctx.beginPath()
         ctx.moveTo(bx - 30, -10)
@@ -78,7 +78,7 @@ export default function FishCanvas() {
       ctx.restore()
 
       // планктон
-      ctx.fillStyle = 'rgba(148, 210, 220, 0.25)'
+      ctx.fillStyle = 'rgba(20, 38, 47, 0.14)'
       for (const p of plankton) {
         p.ph += 0.01
         const px = (p.x + Math.sin(p.ph) * 8) % (W + 40)
@@ -117,7 +117,7 @@ export default function FishCanvas() {
       ctx.arc(7, -1.5, 1.6, 0, Math.PI * 2)
       ctx.fill()
       // тройник
-      ctx.strokeStyle = 'rgba(200, 220, 230, 0.7)'
+      ctx.strokeStyle = 'rgba(20, 38, 47, 0.55)'
       ctx.lineWidth = 1.2
       ctx.beginPath()
       ctx.moveTo(-11, 2); ctx.lineTo(-15, 8); ctx.lineTo(-12, 9)
@@ -133,7 +133,7 @@ export default function FishCanvas() {
       ctx.restore()
 
       // леска вверх от приманки
-      ctx.strokeStyle = 'rgba(180, 220, 230, 0.12)'
+      ctx.strokeStyle = 'rgba(20, 38, 47, 0.16)'
       ctx.lineWidth = 1
       ctx.beginPath()
       ctx.moveTo(lure.x, lure.y + wob - 4)
@@ -195,8 +195,8 @@ export default function FishCanvas() {
       const pre = fish.spine[SEGS - 4]
       const ta = Math.atan2(tail.y - pre.y, tail.x - pre.x)
       const flap = Math.sin(fish.phase - SEGS * 0.42) * 0.45
-      ctx.fillStyle = 'rgba(65, 130, 150, 0.5)'
-      ctx.strokeStyle = 'rgba(140, 210, 220, 0.35)'
+      ctx.fillStyle = 'rgba(35, 70, 90, 0.45)'
+      ctx.strokeStyle = 'rgba(20, 38, 47, 0.3)'
       ctx.lineWidth = 1
       ctx.beginPath()
       ctx.moveTo(tail.x, tail.y)
@@ -211,9 +211,9 @@ export default function FishCanvas() {
 
       // тело
       const bodyGrad = ctx.createLinearGradient(head.x, head.y - MAXW, head.x, head.y + MAXW)
-      bodyGrad.addColorStop(0, 'rgba(95, 165, 180, 0.72)')
-      bodyGrad.addColorStop(0.55, 'rgba(55, 115, 135, 0.66)')
-      bodyGrad.addColorStop(1, 'rgba(200, 220, 225, 0.5)') // светлое брюхо
+      bodyGrad.addColorStop(0, 'rgba(45, 84, 104, 0.55)')
+      bodyGrad.addColorStop(0.55, 'rgba(28, 62, 80, 0.5)')
+      bodyGrad.addColorStop(1, 'rgba(233, 237, 238, 0.75)') // светлое брюхо
       ctx.fillStyle = bodyGrad
       ctx.beginPath()
       for (let i = 0; i < SEGS; i++) {
@@ -228,8 +228,8 @@ export default function FishCanvas() {
       ctx.fill()
 
       // колючий спинной плавник (веер из лучей, сегменты 5–10)
-      ctx.fillStyle = 'rgba(60, 125, 145, 0.45)'
-      ctx.strokeStyle = 'rgba(150, 215, 225, 0.3)'
+      ctx.fillStyle = 'rgba(35, 70, 90, 0.4)'
+      ctx.strokeStyle = 'rgba(20, 38, 47, 0.25)'
       ctx.beginPath()
       let first = true
       for (let i = 5; i <= 10; i++) {
@@ -248,7 +248,7 @@ export default function FishCanvas() {
       const softFin = (i0, i1, side, len) => {
         const [x0, y0] = edge(i0, side)
         const [x1, y1, a1] = edge(i1, side)
-        ctx.fillStyle = 'rgba(60, 125, 145, 0.4)'
+        ctx.fillStyle = 'rgba(35, 70, 90, 0.35)'
         ctx.beginPath()
         ctx.moveTo(x0, y0)
         ctx.quadraticCurveTo(x1 + Math.cos(a1) * len, y1 + Math.sin(a1) * len, x1, y1)
@@ -261,7 +261,7 @@ export default function FishCanvas() {
       // грудной плавник у головы — гребёт
       const [gx, gy, ga] = edge(3, 1)
       const row = Math.sin(fish.phase * 0.9) * 0.5
-      ctx.fillStyle = 'rgba(90, 160, 175, 0.55)'
+      ctx.fillStyle = 'rgba(235, 80, 23, 0.4)'
       ctx.beginPath()
       ctx.moveTo(gx, gy - 2)
       ctx.quadraticCurveTo(
@@ -272,7 +272,7 @@ export default function FishCanvas() {
       ctx.fill()
 
       // вертикальные полосы окуня (сегменты 4–13)
-      ctx.strokeStyle = 'rgba(15, 45, 60, 0.4)'
+      ctx.strokeStyle = 'rgba(15, 35, 46, 0.35)'
       ctx.lineCap = 'round'
       for (let i = 4; i <= 13; i += 3) {
         const [tx2, ty2] = edge(i, -1)
@@ -287,7 +287,7 @@ export default function FishCanvas() {
       // жаберная крышка
       const [jx, jy] = edge(2, -1)
       const [jx2, jy2] = edge(2, 1)
-      ctx.strokeStyle = 'rgba(170, 220, 230, 0.35)'
+      ctx.strokeStyle = 'rgba(20, 38, 47, 0.28)'
       ctx.lineWidth = 1.4
       ctx.beginPath()
       ctx.moveTo(jx * 0.8 + fish.spine[2].x * 0.2, jy * 0.8 + fish.spine[2].y * 0.2)
@@ -329,12 +329,12 @@ export default function FishCanvas() {
         b.x += Math.sin(b.wob) * 0.4
         b.life -= 0.003
         if (b.y < -20 || b.life <= 0) { bubbles.splice(i, 1); continue }
-        ctx.strokeStyle = `rgba(160, 225, 235, ${0.35 * b.life})`
+        ctx.strokeStyle = `rgba(20, 38, 47, ${0.22 * b.life})`
         ctx.lineWidth = 1
         ctx.beginPath()
         ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2)
         ctx.stroke()
-        ctx.fillStyle = `rgba(200, 240, 250, ${0.18 * b.life})`
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.4 * b.life})`
         ctx.beginPath()
         ctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.35, 0, Math.PI * 2)
         ctx.fill()

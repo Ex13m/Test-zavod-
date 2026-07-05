@@ -2,23 +2,13 @@ import { useState } from 'react'
 import { useStore } from '../store'
 import { useShopItems } from './useShopData'
 import { APP_VERSION, APP_DATE, VERSION_HISTORY, PDF_GUIDES } from '../version'
-import { ART } from '../art'
-import SmartImg from './SmartImg'
 import Icon from './Icons'
 
 // Капитан Окунь: растровый маскот из Higgsfield (Nano Banana),
 // тёмный фон растворяется через mix-blend-mode; при недоступности
 // арта — рисованный SVG-фолбэк ниже.
 export function Captain({ size = 84 }) {
-  return (
-    <SmartImg
-      srcs={ART.captain}
-      alt="Капитан Окунь"
-      className="captain art-blend"
-      style={{ width: size, height: size, objectFit: 'contain' }}
-      fallback={<CaptainSvg size={size} />}
-    />
-  )
+  return <CaptainSvg size={size} />
 }
 
 function CaptainSvg({ size = 84 }) {
@@ -26,17 +16,17 @@ function CaptainSvg({ size = 84 }) {
     <svg viewBox="0 0 148 126" width={size} height={size} className="captain" aria-hidden="true">
       <defs>
         <linearGradient id="cpt-body" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#3ecdba" />
-          <stop offset="0.55" stopColor="#177585" />
-          <stop offset="1" stopColor="#0a3346" />
+          <stop offset="0" stopColor="#3d6577" />
+          <stop offset="0.55" stopColor="#24485c" />
+          <stop offset="1" stopColor="#14262f" />
         </linearGradient>
         <linearGradient id="cpt-belly" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="rgba(232,244,244,0)" />
           <stop offset="1" stopColor="rgba(232,244,244,0.35)" />
         </linearGradient>
         <linearGradient id="cpt-fin" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f6c453" />
-          <stop offset="1" stopColor="#e0762f" />
+          <stop offset="0" stopColor="#f57633" />
+          <stop offset="1" stopColor="#c43e0d" />
         </linearGradient>
         <linearGradient id="cpt-spine" x1="0" y1="1" x2="0" y2="0">
           <stop offset="0" stopColor="rgba(246,196,83,0.25)" />
@@ -52,7 +42,7 @@ function CaptainSvg({ size = 84 }) {
           <stop offset="1" stopColor="#c8d9dd" />
         </linearGradient>
         <filter id="cpt-glow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#2dd4bf" floodOpacity="0.35" />
+          <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#14262f" floodOpacity="0.22" />
         </filter>
       </defs>
 
@@ -62,7 +52,7 @@ function CaptainSvg({ size = 84 }) {
         <path stroke="#0a3346" strokeOpacity="0.5" strokeWidth="1.4" fill="none" d="M22 66 L8 52 M22 68 L4 66 M22 70 L8 82" strokeLinecap="round" />
 
         {/* колючий спинной гребень с перепонкой */}
-        <path fill="url(#cpt-spine)" stroke="#c98a1b" strokeOpacity="0.7" strokeWidth="1.4" strokeLinejoin="round"
+        <path fill="url(#cpt-spine)" stroke="#c43e0d" strokeOpacity="0.7" strokeWidth="1.4" strokeLinejoin="round"
           d="M52 36 L57 12 L64 31 L72 9 L79 29 L87 12 L92 31 L99 18 L101 34 Z" />
 
         {/* тело окуня */}
@@ -115,8 +105,8 @@ function CaptainSvg({ size = 84 }) {
           <path fill="#0d2c3b" stroke="#0a2836" strokeWidth="1.2"
             d="M128 34 Q141 36 144 46 Q136 48 129 44 Q126 38 124 37 Z" />
           {/* золотой кант и якорь */}
-          <path stroke="#f6c453" strokeWidth="1.6" fill="none" d="M91 41 Q112 26 132 33" strokeLinecap="round" />
-          <g stroke="#f6c453" strokeWidth="1.5" fill="none" strokeLinecap="round">
+          <path stroke="#f5a623" strokeWidth="1.6" fill="none" d="M91 41 Q112 26 132 33" strokeLinecap="round" />
+          <g stroke="#f5a623" strokeWidth="1.5" fill="none" strokeLinecap="round">
             <circle cx="113" cy="30" r="2" />
             <path d="M113 32 V39 M109 36 Q113 41 117 36 M110 33.5 H116" />
           </g>

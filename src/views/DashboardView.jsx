@@ -12,10 +12,10 @@ export default function DashboardView() {
   const published = posts.filter((p) => p.published?.length).length
 
   const stats = [
-    { icon: 'hook', c: 'var(--acc)', val: lures.length, label: 'Товаров на складе', glow: 'rgba(45,212,191,0.16)' },
-    { icon: 'quill', c: 'var(--acc-2)', val: posts.length, label: 'Постов произведено', glow: 'rgba(251,191,36,0.14)' },
-    { icon: 'send', c: 'var(--acc-3)', val: published, label: 'Отправлено в каналы', glow: 'rgba(244,114,182,0.14)' },
-    { icon: 'fan', c: 'var(--acc-4)', val: shots.length, label: 'Скринов стиля изучено', glow: 'rgba(129,140,248,0.16)' },
+    { icon: 'hook', c: 'var(--ink-dim)', val: lures.length, label: 'Товаров на складе', glow: 'var(--acc)' },
+    { icon: 'quill', c: 'var(--ink-dim)', val: posts.length, label: 'Постов произведено', glow: 'var(--acc-2)' },
+    { icon: 'send', c: 'var(--ink-dim)', val: published, label: 'Отправлено в каналы', glow: 'var(--acc-4)' },
+    { icon: 'fan', c: 'var(--ink-dim)', val: shots.length, label: 'Скринов стиля изучено', glow: 'var(--ink)' },
   ]
 
   const steps = [

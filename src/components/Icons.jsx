@@ -222,8 +222,8 @@ export function BrandFish({ size = 30 }) {
     <svg viewBox="0 0 32 32" width={size} height={size} fill="none" aria-hidden="true">
       <defs>
         <linearGradient id="bf-g" x1="0" y1="0" x2="32" y2="32">
-          <stop offset="0" stopColor="#2dd4bf" />
-          <stop offset="1" stopColor="#fbbf24" />
+          <stop offset="0" stopColor="#f7f9f9" />
+          <stop offset="1" stopColor="#eb5017" />
         </linearGradient>
       </defs>
       <g stroke="url(#bf-g)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
