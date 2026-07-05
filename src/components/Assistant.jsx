@@ -4,43 +4,116 @@ import { useShopItems } from './useShopData'
 import { APP_VERSION, APP_DATE, VERSION_HISTORY, PDF_GUIDES } from '../version'
 import Icon from './Icons'
 
-// Капитан Окунь — фирменный персонаж в стиле «Зигфелд»:
-// горбатая спина, колючий веер-гребень, капитанская фуражка.
+// Капитан Окунь — фирменный персонаж-иллюстрация: объёмное тело с
+// градиентами, полосы окуня, колючий гребень с перепонкой, выразительный
+// глаз и капитанская фуражка с золотым якорем. Всё — рисованный SVG.
 export function Captain({ size = 84 }) {
   return (
-    <svg viewBox="0 0 120 110" width={size} height={size} className="captain" aria-hidden="true">
+    <svg viewBox="0 0 148 126" width={size} height={size} className="captain" aria-hidden="true">
       <defs>
-        <linearGradient id="cap-g" x1="0" y1="0" x2="120" y2="110">
-          <stop offset="0" stopColor="#2dd4bf" />
-          <stop offset="1" stopColor="#fbbf24" />
+        <linearGradient id="cpt-body" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#3ecdba" />
+          <stop offset="0.55" stopColor="#177585" />
+          <stop offset="1" stopColor="#0a3346" />
         </linearGradient>
+        <linearGradient id="cpt-belly" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="rgba(232,244,244,0)" />
+          <stop offset="1" stopColor="rgba(232,244,244,0.35)" />
+        </linearGradient>
+        <linearGradient id="cpt-fin" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f6c453" />
+          <stop offset="1" stopColor="#e0762f" />
+        </linearGradient>
+        <linearGradient id="cpt-spine" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stopColor="rgba(246,196,83,0.25)" />
+          <stop offset="1" stopColor="rgba(246,196,83,0.7)" />
+        </linearGradient>
+        <radialGradient id="cpt-iris" cx="0.4" cy="0.35" r="0.8">
+          <stop offset="0" stopColor="#ffe9a8" />
+          <stop offset="0.6" stopColor="#e9a53c" />
+          <stop offset="1" stopColor="#7c4a12" />
+        </radialGradient>
+        <linearGradient id="cpt-cap" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fbfdfd" />
+          <stop offset="1" stopColor="#c8d9dd" />
+        </linearGradient>
+        <filter id="cpt-glow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#2dd4bf" floodOpacity="0.35" />
+        </filter>
       </defs>
-      <g stroke="url(#cap-g)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none">
+
+      <g filter="url(#cpt-glow)">
+        {/* хвост-веер с лучами */}
+        <path fill="url(#cpt-fin)" opacity="0.9" d="M24 62 L6 44 Q-2 66 6 88 L24 74 Z" />
+        <path stroke="#0a3346" strokeOpacity="0.5" strokeWidth="1.4" fill="none" d="M22 66 L8 52 M22 68 L4 66 M22 70 L8 82" strokeLinecap="round" />
+
+        {/* колючий спинной гребень с перепонкой */}
+        <path fill="url(#cpt-spine)" stroke="#c98a1b" strokeOpacity="0.7" strokeWidth="1.4" strokeLinejoin="round"
+          d="M52 36 L57 12 L64 31 L72 9 L79 29 L87 12 L92 31 L99 18 L101 34 Z" />
+
         {/* тело окуня */}
-        <path fill="rgba(45,212,191,0.10)" d="M100 62 C92 42 74 30 54 30 C36 30 20 42 12 56 L12 64 C20 80 36 92 54 92 C74 92 92 82 100 62 Z" />
-        {/* хвост-веер */}
-        <path fill="rgba(45,212,191,0.10)" d="M12 56 L-2 46 Q-8 60 -2 76 L12 64 Z" transform="translate(14 0)" />
-        {/* полосы */}
-        <path opacity="0.6" d="M66 34 Q60 60 66 88 M48 34 Q42 60 48 88" />
-        {/* колючий гребень */}
-        <path fill="rgba(251,191,36,0.12)" d="M74 32 Q70 20 62 30 Q58 18 50 29 Q46 20 40 31 Z" />
-        {/* глаз */}
-        <circle cx="82" cy="56" r="5" className="cap-eye" />
-        <circle cx="82" cy="56" r="2" fill="#e8f4f4" stroke="none" />
+        <path fill="url(#cpt-body)" stroke="#0a3346" strokeOpacity="0.55" strokeWidth="1.6"
+          d="M126 70 C120 44 99 30 72 30 C48 30 28 44 20 62 L20 76 C28 94 48 104 72 104 C99 104 120 94 126 70 Z" />
+        {/* блик брюха */}
+        <path fill="url(#cpt-belly)" d="M120 76 C112 92 94 102 72 102 C50 102 32 92 24 78 L24 74 C34 90 52 98 72 98 C94 98 110 90 120 72 Z" />
+
+        {/* полосы окуня */}
+        <g fill="#0a3346" opacity="0.35">
+          <path d="M84 31 Q76 66 84 102 L92 100 Q84 66 92 33 Z" />
+          <path d="M62 31 Q54 66 62 102 L70 101 Q62 66 70 31 Z" />
+          <path d="M42 38 Q36 66 42 96 L49 93 Q43 66 49 41 Z" />
+        </g>
+
+        {/* жаберная дуга и щека */}
+        <path stroke="#0a3346" strokeOpacity="0.5" strokeWidth="1.6" fill="none" d="M104 44 Q96 66 104 90" />
+        <circle cx="112" cy="78" r="4.5" fill="#f08a5d" opacity="0.35" />
+
+        {/* грудной плавник-весло (машет) */}
+        <path className="cap-fin" fill="url(#cpt-fin)" stroke="#0a3346" strokeOpacity="0.4" strokeWidth="1.2"
+          d="M74 76 Q62 94 44 90 Q56 78 60 66 Z" />
+        <path className="cap-fin" stroke="#0a3346" strokeOpacity="0.4" strokeWidth="1.1" fill="none" d="M70 78 Q60 88 50 88 M72 80 Q66 88 58 90" strokeLinecap="round" />
+
+        {/* брюшной плавничок */}
+        <path fill="url(#cpt-fin)" opacity="0.85" d="M92 100 L86 112 L102 104 Z" />
+
         {/* рот-улыбка */}
-        <path d="M96 66 Q90 70 84 68" />
-        {/* грудной плавник-весло */}
-        <path fill="rgba(45,212,191,0.10)" d="M60 66 Q52 78 40 76 L52 62 Z" className="cap-fin" />
-        {/* фуражка капитана */}
-        <path fill="rgba(251,191,36,0.15)" d="M68 30 Q80 18 94 24 L96 32 Q82 28 70 34 Z" />
-        <path d="M94 24 Q99 26 100 31 L96 32" />
-        <circle cx="84" cy="26" r="1.6" fill="#fbbf24" stroke="none" />
+        <path stroke="#072633" strokeWidth="2.2" strokeLinecap="round" fill="none" d="M124 78 Q114 86 102 82" />
+
+        {/* глаз */}
+        <g className="cap-eye">
+          <circle cx="106" cy="58" r="9.5" fill="#eef7f7" stroke="#0a3346" strokeOpacity="0.45" strokeWidth="1.4" />
+          <circle cx="107.5" cy="59" r="6" fill="url(#cpt-iris)" />
+          <circle cx="108" cy="59.5" r="2.6" fill="#131a20" />
+          <circle cx="105" cy="55.5" r="1.9" fill="#ffffff" opacity="0.9" />
+        </g>
+        {/* бровь-козырёк над глазом */}
+        <path stroke="#0a3346" strokeOpacity="0.5" strokeWidth="1.8" strokeLinecap="round" fill="none" d="M96 47 Q106 43 116 48" />
+
+        {/* капитанская фуражка */}
+        <g>
+          {/* тулья */}
+          <path fill="url(#cpt-cap)" stroke="#5f7d86" strokeWidth="1.3"
+            d="M88 34 Q100 12 124 16 Q132 18 133 26 L132 32 Q112 24 90 40 Z" />
+          {/* околыш */}
+          <path fill="#123a4c" stroke="#0a2836" strokeWidth="1.2"
+            d="M90 40 Q112 24 132 32 L133 39 Q112 32 93 47 Z" />
+          {/* козырёк */}
+          <path fill="#0d2c3b" stroke="#0a2836" strokeWidth="1.2"
+            d="M128 34 Q141 36 144 46 Q136 48 129 44 Q126 38 124 37 Z" />
+          {/* золотой кант и якорь */}
+          <path stroke="#f6c453" strokeWidth="1.6" fill="none" d="M91 41 Q112 26 132 33" strokeLinecap="round" />
+          <g stroke="#f6c453" strokeWidth="1.5" fill="none" strokeLinecap="round">
+            <circle cx="113" cy="30" r="2" />
+            <path d="M113 32 V39 M109 36 Q113 41 117 36 M110 33.5 H116" />
+          </g>
+        </g>
       </g>
+
       {/* пузырьки */}
-      <g className="cap-bubbles" stroke="rgba(160,225,235,0.7)" fill="none" strokeWidth="1.3">
-        <circle className="b1" cx="104" cy="40" r="3" />
-        <circle className="b2" cx="110" cy="28" r="2" />
-        <circle className="b3" cx="106" cy="16" r="2.6" />
+      <g className="cap-bubbles" stroke="rgba(180,235,240,0.85)" fill="rgba(220,245,248,0.12)" strokeWidth="1.4">
+        <circle className="b1" cx="132" cy="52" r="3.4" />
+        <circle className="b2" cx="139" cy="38" r="2.2" />
+        <circle className="b3" cx="134" cy="22" r="3" />
       </g>
     </svg>
   )

@@ -876,10 +876,10 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 }
 .assistant-toggle:hover { transform: scale(1.07) rotate(-3deg); }
 .captain { animation: bob 4.5s ease-in-out infinite; overflow: visible; }
-.captain .cap-fin { transform-origin: 52px 66px; animation: fin-wag 2.2s ease-in-out infinite; }
-@keyframes fin-wag { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(14deg); } }
-.captain .cap-eye { animation: blink 5s steps(1) infinite; }
-@keyframes blink { 0%, 92%, 100% { opacity: 1; } 95% { opacity: 0.15; } }
+.captain .cap-fin { transform-box: fill-box; transform-origin: 80% 12%; animation: fin-wag 2.2s ease-in-out infinite; }
+@keyframes fin-wag { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(16deg); } }
+.captain .cap-eye { transform-box: fill-box; transform-origin: center; animation: blink 5s ease-in-out infinite; }
+@keyframes blink { 0%, 91%, 96%, 100% { transform: scaleY(1); } 93.5% { transform: scaleY(0.1); } }
 .captain .cap-bubbles circle { animation: cap-bub 3.2s ease-in infinite; opacity: 0; }
 .captain .cap-bubbles .b2 { animation-delay: 1.1s; }
 .captain .cap-bubbles .b3 { animation-delay: 2.2s; }
