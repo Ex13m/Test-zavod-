@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useStore, saveImage, loadImage } from '../store'
 import { generatePost, FRAMEWORKS, TONES } from '../engine/generator'
+import { autoDistribute } from '../engine/distribution'
 import { LANGS } from '../engine/i18n'
 import { ALL_TYPES } from '../engine/lureTypes'
 import { useImage } from '../components/useImage'
@@ -81,13 +82,20 @@ export default function FactoryView() {
   const save = async () => {
     if (!result || saved) return
     let imgKey = null
+    let photo = null
     if (lure?.imgKey) {
-      const src = await loadImage(lure.imgKey)
-      if (src) imgKey = await saveImage(src) // отдельная копия — пост живёт независимо от приманки
+      photo = await loadImage(lure.imgKey)
+      if (photo) imgKey = await saveImage(photo) // отдельная копия — пост живёт независимо от приманки
     }
     addPost({ ...result, lureId: lure?.id, imgKey })
     setSaved(true)
     showToast('Пост принят на склад готовой продукции', '📦')
+
+    // автопостинг: каналы, где включены оба тумблера («канал» + «авто»)
+    const { posts, channels, autoChannels, markPublished } = useStore.getState()
+    const newPost = posts[0]
+    const lines = await autoDistribute(newPost, photo, useStore.getState().settings, channels, autoChannels, markPublished)
+    if (lines.length) showToast(`Автопостинг: ${lines.length} канал(а) — ${lines[0]}`, '📡')
   }
 
   const copy = () => {

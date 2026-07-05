@@ -14,16 +14,25 @@ function AgentPanel() {
       <div className="panel-title"><Icon name="lens" size={14} className="icon-gold" /> ИИ-агент (Claude Vision)</div>
       {state === 'probe' && <div className="hint">Проверяем доступность агента…</div>}
       {state === 'on' && (
-        <div className="pill-note" style={{ borderColor: 'rgba(74,222,128,0.4)', color: 'var(--ok)', background: 'rgba(74,222,128,0.07)' }}>
-          Агент активен · {st.model} — распознавание товаров по фото, чтение постов, анализ сайтов
-        </div>
+        <>
+          <div className="pill-note" style={{ borderColor: 'rgba(74,222,128,0.4)', color: 'var(--ok)', background: 'rgba(74,222,128,0.07)' }}>
+            Агент активен · {st.providerLabel || 'Claude'} · {st.model} — распознавание товаров по фото, чтение постов, анализ сайтов
+          </div>
+          {st.provider === 'anthropic' && (
+            <div className="hint" style={{ marginTop: 10 }}>
+              Модель задаётся переменной <b style={{ color: 'var(--acc)' }}>AI_MODEL</b> на Netlify (по умолчанию — Opus 4.8, максимум качества).
+            </div>
+          )}
+        </>
       )}
       {state === 'nokey' && (
         <>
           <div className="pill-note">Агент задеплоен, но ключ не задан — работает резервная эвристика</div>
           <div className="hint" style={{ marginTop: 10, lineHeight: 1.7 }}>
-            Включение (2 минуты): Netlify → Site configuration → Environment variables →
-            добавьте <b style={{ color: 'var(--acc)' }}>ANTHROPIC_API_KEY</b> (ключ с console.anthropic.com) → Redeploy.
+            Включение (2 минуты) — Netlify → Site configuration → Environment variables, добавьте ЛЮБОЙ из ключей и нажмите Redeploy:<br />
+            · <b style={{ color: 'var(--acc)' }}>GEMINI_API_KEY</b> — бесплатно, ключ на aistudio.google.com («Get API key»)<br />
+            · <b style={{ color: 'var(--acc)' }}>OPENROUTER_API_KEY</b> — бесплатные модели, ключ на openrouter.ai<br />
+            · <b style={{ color: 'var(--acc)' }}>ANTHROPIC_API_KEY</b> — платный Claude (Opus 4.8), максимум качества, console.anthropic.com<br />
             Подробно: docs/AI-AGENT.md в репозитории.
           </div>
         </>

@@ -123,6 +123,12 @@ const P = {
       <circle cx="16.8" cy="7.2" r="0.7" fill="currentColor" stroke="none" />
     </>
   ),
+  fb: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13.5 21v-7h2.5l.5-3h-3V9.2c0-1 .3-1.7 1.8-1.7H17V4.8c-.3 0-1.2-.1-2.2-.1-2.2 0-3.6 1.3-3.6 3.8V11H8.5v3h2.7v7" />
+    </>
+  ),
   ok: (
     <>
       <circle cx="12" cy="8" r="3.5" />

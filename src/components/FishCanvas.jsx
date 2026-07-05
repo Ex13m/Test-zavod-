@@ -187,7 +187,7 @@ export default function FishCanvas() {
       const MAXW = 17 * (W < 700 ? 0.72 : 1)
       const width = (i) => {
         const q = i / (SEGS - 1)
-        if (q < 0.3) return MAXW * (0.3 + 0.7 * Math.sin((q / 0.3) * Math.PI * 0.5))
+        if (q < 0.3) return MAXW * (0.14 + 0.86 * Math.pow(Math.sin((q / 0.3) * Math.PI * 0.5), 1.3))
         const t = (q - 0.3) / 0.7
         return MAXW * (1 - 0.88 * Math.pow(t, 1.2))
       }
@@ -215,10 +215,10 @@ export default function FishCanvas() {
       ctx.lineWidth = 1
       ctx.beginPath()
       ctx.moveTo(tail.x, tail.y)
-      ctx.lineTo(tail.x + Math.cos(ta + 0.65 + flap) * 24, tail.y + Math.sin(ta + 0.65 + flap) * 24)
+      ctx.lineTo(tail.x + Math.cos(ta + 0.6 + flap) * 28, tail.y + Math.sin(ta + 0.6 + flap) * 28)
       ctx.quadraticCurveTo(
-        tail.x + Math.cos(ta + flap) * 13, tail.y + Math.sin(ta + flap) * 13,
-        tail.x + Math.cos(ta - 0.65 + flap) * 24, tail.y + Math.sin(ta - 0.65 + flap) * 24
+        tail.x + Math.cos(ta + flap) * 7, tail.y + Math.sin(ta + flap) * 7,
+        tail.x + Math.cos(ta - 0.6 + flap) * 28, tail.y + Math.sin(ta - 0.6 + flap) * 28
       )
       ctx.closePath()
       ctx.fill()
@@ -307,6 +307,24 @@ export default function FishCanvas() {
       ctx.beginPath()
       ctx.moveTo(jx * 0.8 + fish.spine[2].x * 0.2, jy * 0.8 + fish.spine[2].y * 0.2)
       ctx.quadraticCurveTo(fish.spine[3].x, fish.spine[3].y, jx2 * 0.85 + fish.spine[2].x * 0.15, jy2 * 0.85 + fish.spine[2].y * 0.15)
+      ctx.stroke()
+
+      // затемнение головы + крышка жабр объёмом
+      const h2 = fish.spine[2]
+      const headAng = Math.atan2(fish.spine[0].y - fish.spine[3].y, fish.spine[0].x - fish.spine[3].x)
+      ctx.fillStyle = 'rgba(58, 88, 112, 0.35)'
+      ctx.beginPath()
+      ctx.ellipse(h2.x, h2.y, width(2) * 1.05, width(2) * 0.9, headAng, 0, Math.PI * 2)
+      ctx.fill()
+
+      // боковая линия
+      ctx.strokeStyle = 'rgba(228, 240, 250, 0.22)'
+      ctx.lineWidth = 1.1
+      ctx.beginPath()
+      for (let i = 3; i <= 17; i++) {
+        const p = fish.spine[i]
+        i === 3 ? ctx.moveTo(p.x, p.y - width(i) * 0.12) : ctx.lineTo(p.x, p.y - width(i) * 0.12)
+      }
       ctx.stroke()
 
       // рот — приоткрыт в погоне

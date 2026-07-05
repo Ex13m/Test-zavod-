@@ -98,12 +98,17 @@ export const useStore = create(
       // --- каналы дистрибуции (заглушка API) ---
       channels: {
         telegram: false,
+        webhook: false,
+        fb: false,
         vk: false,
         dzen: false,
         instagram: false,
         ok: false,
       },
       toggleChannel: (ch) => set((s) => ({ channels: { ...s.channels, [ch]: !s.channels[ch] } })),
+      // «авто»: пост уходит в канал сам при выпуске с конвейера
+      autoChannels: {},
+      toggleAutoChannel: (ch) => set((s) => ({ autoChannels: { ...s.autoChannels, [ch]: !s.autoChannels?.[ch] } })),
 
       // --- настройки ---
       settings: {
@@ -136,6 +141,7 @@ export const useStore = create(
         shots: s.shots,
         posts: s.posts,
         channels: s.channels,
+        autoChannels: s.autoChannels,
         settings: s.settings,
         styleProfile: s.styleProfile,
       }),

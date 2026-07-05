@@ -56,6 +56,11 @@ const FISH = {
       <circle fill="currentColor" cx="172" cy="50" r="1.8" />
     </g>
   ),
+  trout: ( // форель — изогнутая, кормится: открытая пасть, жировой плавник
+    <g>
+      <path {...S} d="M225 42 L236 35 L228 46 L237 55 L223 52 C213 62 199 68 184 70 L177 82 L167 73 C149 74 131 72 116 68 L107 80 L100 69 C84 63 70 57 60 51 L33 68 C40 57 40 44 33 33 L60 46 C76 39 92 33 110 30 L117 15 L131 26 C150 23 170 23 188 28 C193 25 198 26 201 30 C211 32 218 36 225 42 Z" />
+    </g>
+  ),
   asp: ( // жерех — торпеда с мощным вильчатым веером-хвостом
     <g>
       <path {...S} d="M212 48 C198 38 174 30 144 28 C108 25 74 30 50 41 L50 57 C74 66 108 71 144 68 C174 66 198 58 212 48 Z" />
@@ -136,7 +141,7 @@ const LAYERS = [
     fish: [
       { kind: 'zander', top: '26%', dur: '62s', delay: '-20s', scale: 0.85, dir: 'rtl', drift: '8s' },
       { kind: 'asp', top: '58%', dur: '74s', delay: '-48s', scale: 0.75, dir: 'rtl', drift: '7s' },
-      { kind: 'perch', top: '70%', dur: '58s', delay: '-10s', scale: 0.65, dir: 'ltr', drift: '9s' },
+      { kind: 'trout', top: '70%', dur: '58s', delay: '-10s', scale: 0.7, dir: 'ltr', drift: '9s' },
     ],
     weeds: [
       { left: '16%', h: 140, sway: '8s', delay: '-2s' },
@@ -148,7 +153,7 @@ const LAYERS = [
     z: 'near', blur: 0, opacity: 0.22, color: '#7fa2c2',
     fish: [
       { kind: 'pike', top: '44%', dur: '38s', delay: '-12s', scale: 1.45, dir: 'ltr', drift: '6s' },
-      { kind: 'perch', top: '78%', dur: '46s', delay: '-30s', scale: 1.1, dir: 'rtl', drift: '7s' },
+      { kind: 'trout', top: '78%', dur: '46s', delay: '-30s', scale: 1.15, dir: 'rtl', drift: '7s' },
     ],
     weeds: [
       { left: '-2%', h: 220, sway: '7s', delay: '0s' },

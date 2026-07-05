@@ -24,7 +24,7 @@ function AgentBanner() {
   return (
     <div className="pill-note mb-16" style={{ cursor: 'pointer' }} onClick={() => setView('settings')}>
       <Icon name="lens" size={14} /> ИИ-агент не подключён — тип угадывается по имени файла.
-      Нажмите, чтобы открыть инструкцию по включению (Настройки → ИИ-агент)
+      Нажмите: инструкция по включению, есть бесплатные варианты (Настройки → ИИ-агент)
     </div>
   )
 }

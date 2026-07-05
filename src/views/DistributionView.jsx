@@ -5,7 +5,7 @@ import Icon from '../components/Icons'
 import { useShopItems } from '../components/useShopData'
 
 export default function DistributionView() {
-  const { channels, toggleChannel, settings, setSettings, markPublished, showToast } = useStore()
+  const { channels, toggleChannel, autoChannels, toggleAutoChannel, settings, setSettings, markPublished, showToast } = useStore()
   const posts = useShopItems('posts')
   const distPostId = useStore((s) => s.distPostId)
   const [postId, setPostId] = useState(distPostId || posts[0]?.id || '')
@@ -65,9 +65,25 @@ export default function DistributionView() {
                   <div className="ch-name">{ch.name} {!ch.real && <span className="tag" style={{ marginLeft: 6 }}>скоро</span>}</div>
                   <div className="ch-status">{ch.note}</div>
                 </div>
-                <div className={'switch' + (channels[ch.id] ? ' on' : '')} onClick={() => toggleChannel(ch.id)} />
+                <div className="ch-controls">
+                  <div className="ch-ctrl">
+                    <span>канал</span>
+                    <div className={'switch sm' + (channels[ch.id] ? ' on' : '')} onClick={() => toggleChannel(ch.id)} />
+                  </div>
+                  <div className="ch-ctrl" style={{ opacity: channels[ch.id] ? 1 : 0.4 }}>
+                    <span>авто</span>
+                    <div
+                      className={'switch sm' + (autoChannels?.[ch.id] ? ' on' : '')}
+                      onClick={() => channels[ch.id] && toggleAutoChannel(ch.id)}
+                    />
+                  </div>
+                </div>
               </div>
             ))}
+            <div className="hint" style={{ fontSize: 11.5, marginTop: 10 }}>
+              «Канал» — сеть участвует в ручной рассылке. «Авто» — пост уходит в эту сеть сам,
+              сразу при сохранении с конвейера в историю.
+            </div>
             <div className="hint" style={{ fontSize: 11, color: 'var(--ink-faint)', marginTop: 8 }}>
               *Instagram принадлежит Meta, признанной экстремистской организацией в РФ.
             </div>

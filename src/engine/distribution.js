@@ -9,6 +9,7 @@
 export const CHANNELS = [
   { id: 'telegram', name: 'Telegram', icon: 'plane', real: true, note: 'Bot API через Netlify Function' },
   { id: 'webhook', name: 'Автопостинг (вебхук)', icon: 'link', real: true, note: 'n8n · Make · Zapier · Albato' },
+  { id: 'fb', name: 'Facebook*', icon: 'fb', real: false, note: 'через Graph API — в дорожной карте' },
   { id: 'vk', name: 'ВКонтакте', icon: 'vk', real: false, note: 'API-интеграция — в дорожной карте' },
   { id: 'dzen', name: 'Дзен', icon: 'dzen', real: false, note: 'API-интеграция — в дорожной карте' },
   { id: 'instagram', name: 'Instagram*', icon: 'insta', real: false, note: 'через Graph API — в дорожной карте' },
@@ -22,6 +23,30 @@ export const WEBHOOK_PRESETS = [
   { id: 'albato', name: 'Albato', hint: 'https://h.albato.ru/wh/...' },
   { id: 'custom', name: 'Свой URL', hint: 'https://...' },
 ]
+
+/**
+ * Автопостинг при выпуске поста: рассылает по каналам, у которых включены
+ * оба тумблера — «канал» и «авто». Возвращает строки журнала.
+ */
+export async function autoDistribute(post, photoDataUrl, settings, channels, autoChannels, markPublished) {
+  const lines = []
+  for (const ch of CHANNELS) {
+    if (!channels[ch.id] || !autoChannels?.[ch.id]) continue
+    if (ch.id === 'telegram') {
+      const r = await publishToTelegram(post, photoDataUrl, settings)
+      lines.push(r.ok ? 'Telegram → авто: опубликовано' : `Telegram → авто: ошибка (${r.error})`)
+      if (r.ok) markPublished(post.id, 'Telegram')
+    } else if (ch.id === 'webhook') {
+      const r = await publishToWebhook(post, photoDataUrl, settings)
+      lines.push(r.ok ? 'Автопостинг (вебхук) → авто: отправлено' : `Вебхук → авто: ошибка (${r.error})`)
+      if (r.ok) markPublished(post.id, 'Вебхук')
+    } else {
+      lines.push(`${ch.name} → авто: в очереди (API в дорожной карте)`)
+      markPublished(post.id, ch.name)
+    }
+  }
+  return lines
+}
 
 /** Публикация в Telegram через прокси-функцию (работает на деплое Netlify). */
 export async function publishToTelegram(post, photoDataUrl, cfg) {

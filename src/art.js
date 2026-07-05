@@ -15,20 +15,22 @@ export const ART = {
   ],
   // Капитан Окунь — премиальный рендер (Nano Banana); тёмный фон
   // растворяется на тёмной теме через mix-blend-mode: lighten
-  captain: [
-    '/art/captain.png',
-    CDN + 'hf_20260705_211247_a7d5cdf3-acd4-43bb-a50a-495c742c5324.png',
-  ],
+  // прозрачный стикер (появится в public/art — подхватится сам);
+  // до тех пор — рисованный SVG-капитан без фона
+  captain: ['/art/captain.png'],
   // светящаяся приманка — декор (GPT Image 2)
   lure: [
     '/art/lure-glow.png',
     CDN + 'hf_20260705_225028_e9cb55e4-58a7-4b6c-b3bc-a58b9487c505.png',
   ],
   // монолитные силуэты рыб (Recraft V4.1 vector, SVG; фон файла = фон темы)
+  // прозрачные стикеры силуэтов (PNG без фона) — положим в public/art;
+  // до тех пор работают встроенные векторные силуэты (прозрачные по природе)
   silhouettes: {
-    pike: ['/art/sil-pike.svg', CDN + 'hf_20260705_225253_fbf5ac6f-67dc-495a-87f8-560fffca11b4.svg'],
-    perch: ['/art/sil-perch.svg', CDN + 'hf_20260705_225305_16a52127-1413-423f-975a-88b23e1df057.svg'],
-    zander: ['/art/sil-trout.svg', CDN + 'hf_20260705_225235_f6854783-18aa-4222-9243-7cd4e544fe02.svg'],
-    asp: ['/art/sil-leap.svg', CDN + 'hf_20260705_225313_894ae626-ccc4-4f4c-85db-ea517f595cf5.svg'],
+    pike: ['/art/sil-pike.png'],
+    perch: ['/art/sil-perch.png'],
+    zander: ['/art/sil-zander.png'],
+    asp: ['/art/sil-asp.png'],
+    trout: ['/art/sil-trout.png'],
   },
 }
