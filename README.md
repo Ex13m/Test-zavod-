@@ -42,6 +42,20 @@ SPA-redirect) и serverless-функцию `netlify/functions/telegram-post.mjs`
 3. Завод шлёт JSON: `{ source, version, title, text, meta, photoDataUrl?, createdAt }` —
    дальше сценарий раскладывает пост по соцсетям.
 
+## ИИ-агент (уже работает на сайте)
+
+На деплое живёт агент `netlify/functions/ai-agent.mjs` — единый прокси
+к нейросетям для трёх задач: распознать товар по фото, снять профиль
+стиля со скринов постов, проанализировать сайт магазина по HTML.
+Провайдер выбирается по первому заданному ключу: Anthropic Claude
+(`ANTHROPIC_API_KEY`, минимум Opus 4.8) → Google Gemini
+(`GEMINI_API_KEY`, бесплатный) → OpenRouter (`OPENROUTER_API_KEY`,
+бесплатные `:free`-модели). Ключи задаются в переменных окружения
+Netlify и в браузер не попадают; без ключа завод молча работает на
+эвристике. Статус виден в «Настройки → ИИ-агент».
+
+Подробности и включение за 2 минуты: [docs/AI-AGENT.md](docs/AI-AGENT.md).
+
 ## Структура проекта
 
 ```
@@ -50,14 +64,15 @@ src/
     lureTypes.js       # база знаний: 8 типов приманок (рыба, боли, выгоды, лексика)
     generator.js       # сборка постов: формулы AIDA/PAS/Story/Expert/FOMO × тон × стиль
     styleAnalyzer.js   # эвристика копирования стиля по скринам (v1)
-    distribution.js    # выходы: Telegram-прокси, вебхук автопостинга
+    distribution.js    # выходы: Telegram-прокси, вебхук автопостинга, автопостинг
+    agent.js           # клиент ИИ-агента (мягкая деградация в эвристику)
     imageUtil.js       # сжатие загружаемых фото
   art.js           # реестр арта Higgsfield: цепочки источников (см. раздел ниже)
   components/      # FishCanvas (подводная сцена), Dropzone, hooks
   views/           # Пульт · Приманки · Конвейер · Стиль · История · Дистрибуция · Настройки
   store.js         # zustand + persist; картинки в IndexedDB
-netlify/functions/ # telegram-post.mjs — CORS-прокси к Bot API
-docs/              # SPEC.md · ROADMAP.md
+netlify/functions/ # ai-agent.mjs — ИИ-агент · telegram-post.mjs — CORS-прокси к Bot API
+docs/              # SPEC.md · ROADMAP.md · AI-AGENT.md · AUTOMATION.md · UI-SPEC-V0.md
 ```
 
 ## Арт из Higgsfield
@@ -85,5 +100,8 @@ docs/              # SPEC.md · ROADMAP.md
 ## Документация
 
 - [Спецификация (spec-pilot)](docs/SPEC.md)
+- [ИИ-агент: устройство и включение](docs/AI-AGENT.md)
+- [Автоматизация постинга](docs/AUTOMATION.md)
+- [UI-спецификация](docs/UI-SPEC-V0.md)
 - [Дорожная карта](docs/ROADMAP.md)
 - [История изменений](CHANGELOG.md)
