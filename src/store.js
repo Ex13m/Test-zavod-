@@ -120,6 +120,9 @@ export const useStore = create(
         defaultLength: 'medium',
         defaultLang: 'ru',
         brandName: 'Мой магазин приманок',
+        // ИИ-агент: ключ, введённый в настройках; хранится только
+        // в этом браузере (localStorage), на сервер не сохраняется
+        aiKey: '',
         // дистрибуция
         tgToken: '',
         tgChatId: '',

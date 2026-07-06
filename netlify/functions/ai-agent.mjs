@@ -12,7 +12,10 @@
 //      aistudio.google.com; переопределить: GEMINI_MODEL)
 //   3. OpenRouter — OPENROUTER_API_KEY (бесплатные :free-модели на
 //      openrouter.ai; переопределить: OPENROUTER_MODEL)
-// Ключи задаются в Netlify → Site configuration → Environment variables.
+// Ключи задаются в Netlify → Site configuration → Environment variables,
+// ЛИБО вводятся в настройках завода и приходят с каждым запросом как
+// clientKey (хранятся только в браузере пользователя; провайдер
+// определяется по виду ключа: sk-ant-… / AIza… / sk-or-…).
 // Без единого ключа функция отвечает { ok:false, reason:'no_key' } —
 // фронт мягко уходит в эвристику.
 // ============================================================
@@ -146,13 +149,21 @@ async function callOpenRouter(apiKey, system, content, maxTokens = 700) {
   return parseJSON(data.choices?.[0]?.message?.content)
 }
 
-function pickProvider() {
+function pickProvider(clientKey = '') {
   if (process.env.ANTHROPIC_API_KEY)
     return { id: 'anthropic', label: 'Claude', model: CLAUDE_MODEL, key: process.env.ANTHROPIC_API_KEY, call: callClaude }
   if (process.env.GEMINI_API_KEY)
     return { id: 'gemini', label: 'Gemini (бесплатный)', model: GEMINI_MODEL, key: process.env.GEMINI_API_KEY, call: callGemini }
   if (process.env.OPENROUTER_API_KEY)
     return { id: 'openrouter', label: 'OpenRouter (бесплатный)', model: OPENROUTER_MODEL, key: process.env.OPENROUTER_API_KEY, call: callOpenRouter }
+  // ключ из настроек завода (браузер пользователя) — тип по префиксу
+  const k = String(clientKey || '').trim()
+  if (k.startsWith('sk-ant-'))
+    return { id: 'anthropic', label: 'Claude (ключ из браузера)', model: CLAUDE_MODEL, key: k, call: callClaude }
+  if (k.startsWith('AIza'))
+    return { id: 'gemini', label: 'Gemini (ключ из браузера)', model: GEMINI_MODEL, key: k, call: callGemini }
+  if (k.startsWith('sk-or-'))
+    return { id: 'openrouter', label: 'OpenRouter (ключ из браузера)', model: OPENROUTER_MODEL, key: k, call: callOpenRouter }
   return null
 }
 
@@ -165,9 +176,10 @@ const dataUrlToImg = (dataUrl) => {
 export default async (req) => {
   if (req.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS })
 
-  const provider = pickProvider()
-  // GET — проба статуса агента
-  if (req.method === 'GET')
+  // GET — проба статуса агента (только серверные ключи;
+  // ключ из браузера фронт учитывает сам, без запроса)
+  if (req.method === 'GET') {
+    const provider = pickProvider()
     return json({
       ok: true,
       hasKey: Boolean(provider),
@@ -175,16 +187,18 @@ export default async (req) => {
       providerLabel: provider?.label || null,
       model: provider?.model || null,
     })
+  }
   if (req.method !== 'POST') return json({ ok: false, error: 'POST only' }, 405)
-  if (!provider)
-    return json(
-      { ok: false, reason: 'no_key', error: 'Нет ни одного ключа: ANTHROPIC_API_KEY / GEMINI_API_KEY / OPENROUTER_API_KEY' },
-      200
-    )
 
   let body
   try { body = await req.json() } catch { return json({ ok: false, error: 'Некорректный JSON' }, 400) }
-  const { task, images = [], url } = body
+  const { task, images = [], url, clientKey } = body
+  const provider = pickProvider(clientKey)
+  if (!provider)
+    return json(
+      { ok: false, reason: 'no_key', error: 'Нет ключа: задайте в Netlify (ANTHROPIC_API_KEY / GEMINI_API_KEY / OPENROUTER_API_KEY) или вставьте ключ в Настройках завода' },
+      200
+    )
   if (!PROMPTS[task]) return json({ ok: false, error: 'task должен быть product | style | shop' }, 400)
 
   try {

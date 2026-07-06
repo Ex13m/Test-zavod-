@@ -6,43 +6,48 @@ import { agentStatus } from '../engine/agent'
 import Icon from '../components/Icons'
 
 function AgentPanel() {
+  const { settings, setSettings } = useStore()
   const [st, setSt] = useState(null)
-  useEffect(() => { agentStatus().then(setSt) }, [])
-  const state = !st ? 'probe' : st.offline ? 'offline' : st.hasKey ? 'on' : 'nokey'
+  useEffect(() => { agentStatus(true).then(setSt) }, [settings.aiKey])
+  const state = !st ? 'probe' : st.hasKey ? 'on' : st.offline ? 'offline' : 'nokey'
+  const badKey = Boolean((settings.aiKey || '').trim()) && !(st && st.hasKey && st.local)
   return (
     <div className="panel mt-20">
-      <div className="panel-title"><Icon name="lens" size={14} className="icon-gold" /> ИИ-агент (Claude Vision)</div>
+      <div className="panel-title"><Icon name="lens" size={14} className="icon-gold" /> ИИ-агент (распознавание по фото)</div>
       {state === 'probe' && <div className="hint">Проверяем доступность агента…</div>}
       {state === 'on' && (
-        <>
-          <div className="pill-note" style={{ borderColor: 'rgba(74,222,128,0.4)', color: 'var(--ok)', background: 'rgba(74,222,128,0.07)' }}>
-            Агент активен · {st.providerLabel || 'Claude'} · {st.model} — распознавание товаров по фото, чтение постов, анализ сайтов
-          </div>
-          {st.provider === 'anthropic' && (
-            <div className="hint" style={{ marginTop: 10 }}>
-              Модель задаётся переменной <b style={{ color: 'var(--acc)' }}>AI_MODEL</b> на Netlify (по умолчанию — Opus 4.8, максимум качества).
-            </div>
-          )}
-        </>
-      )}
-      {state === 'nokey' && (
-        <>
-          <div className="pill-note">Агент задеплоен, но ключ не задан — работает резервная эвристика</div>
-          <div className="hint" style={{ marginTop: 10, lineHeight: 1.7 }}>
-            Включение (2 минуты) — Netlify → Site configuration → Environment variables, добавьте ЛЮБОЙ из ключей и нажмите Redeploy:<br />
-            · <b style={{ color: 'var(--acc)' }}>GEMINI_API_KEY</b> — бесплатно, ключ на aistudio.google.com («Get API key»)<br />
-            · <b style={{ color: 'var(--acc)' }}>OPENROUTER_API_KEY</b> — бесплатные модели, ключ на openrouter.ai<br />
-            · <b style={{ color: 'var(--acc)' }}>ANTHROPIC_API_KEY</b> — платный Claude (Opus 4.8), максимум качества, console.anthropic.com<br />
-            Подробно: docs/AI-AGENT.md в репозитории.
-          </div>
-        </>
-      )}
-      {state === 'offline' && (
-        <div className="hint">
-          Локальный запуск — serverless-функции недоступны. На деплое Netlify агент включится автоматически
-          (при заданном ANTHROPIC_API_KEY), без него — эвристика.
+        <div className="pill-note" style={{ borderColor: 'rgba(74,222,128,0.4)', color: 'var(--ok)', background: 'rgba(74,222,128,0.07)' }}>
+          Агент активен · {st.providerLabel || 'Claude'}{st.model ? ` · ${st.model}` : ''} — распознавание товаров по фото, чтение постов, анализ сайтов
         </div>
       )}
+      {state === 'nokey' && (
+        <div className="pill-note">Ключ не задан — работает резервная эвристика (тип угадывается по имени файла)</div>
+      )}
+      {state === 'offline' && (
+        <div className="hint">Локальный запуск — serverless-функции недоступны. Вставьте ключ и откройте деплой на Netlify.</div>
+      )}
+      <div className="field" style={{ marginTop: 12 }}>
+        <label>API-ключ (хранится только в этом браузере)</label>
+        <input
+          type="password"
+          placeholder="AIza… (Gemini) · sk-or-… (OpenRouter) · sk-ant-… (Claude)"
+          value={settings.aiKey || ''}
+          onChange={(e) => setSettings({ aiKey: e.target.value.trim() })}
+          autoComplete="off"
+        />
+        {badKey && (
+          <div className="hint" style={{ color: 'var(--danger)' }}>
+            Ключ не похож ни на один провайдер: должен начинаться с AIza (Gemini), sk-or- (OpenRouter) или sk-ant- (Claude).
+          </div>
+        )}
+        <div className="hint" style={{ lineHeight: 1.7 }}>
+          Бесплатный ключ: aistudio.google.com («Get API key», начинается с <b style={{ color: 'var(--acc)' }}>AIza</b>) или openrouter.ai
+          (<b style={{ color: 'var(--acc)' }}>sk-or-</b>). Платный Claude: console.anthropic.com (<b style={{ color: 'var(--acc)' }}>sk-ant-</b>).
+          Вставили — агент включается сразу, никаких настроек Netlify не нужно. Ключ живёт в вашем браузере
+          и передаётся только вашей функции на Netlify. Альтернатива для команды — переменные окружения
+          на Netlify (docs/AI-AGENT.md).
+        </div>
+      </div>
     </div>
   )
 }
