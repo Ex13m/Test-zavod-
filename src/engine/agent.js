@@ -2,35 +2,63 @@
 // Фронтовый клиент ИИ-агента. Все вызовы деградируют мягко:
 // нет деплоя / нет ключа / ошибка сети → возвращаем null,
 // и завод продолжает работать на эвристике.
-// Ключ берётся либо с сервера (env Netlify), либо из настроек
-// завода (хранится в браузере) — тогда он передаётся функции
-// с каждым запросом и никуда не сохраняется.
+// Ключи: серверные env Netlify ИЛИ до трёх ключей из настроек
+// (хранятся только в браузере). Если сохранено несколько —
+// используется первый рабочий в порядке Claude → Gemini →
+// OpenRouter, при ошибке/лимите берётся следующий.
 // ============================================================
 import { useStore } from '../store'
 
 const FN = '/.netlify/functions/ai-agent'
 
+export const PROVIDERS = [
+  { id: 'anthropic', label: 'Claude', model: 'claude-opus-4-8', prefix: 'sk-ant-' },
+  { id: 'gemini', label: 'Gemini (бесплатный)', model: 'gemini-2.5-flash', prefix: 'AIza' },
+  { id: 'openrouter', label: 'OpenRouter (бесплатный)', model: 'gemini-2.0-flash (:free)', prefix: 'sk-or-' },
+]
+
 /** Определить провайдера по виду ключа (как на сервере). */
 export function detectProvider(key = '') {
   const k = key.trim()
   if (!k) return null
-  if (k.startsWith('sk-ant-')) return { id: 'anthropic', label: 'Claude', model: 'claude-opus-4-8' }
-  if (k.startsWith('sk-or-')) return { id: 'openrouter', label: 'OpenRouter (бесплатный)', model: 'gemini-2.0-flash (:free)' }
-  if (k.startsWith('AIza')) return { id: 'gemini', label: 'Gemini (бесплатный)', model: 'gemini-2.5-flash' }
-  return { id: 'unknown', label: 'неизвестный ключ', model: null }
+  return PROVIDERS.find((p) => k.startsWith(p.prefix)) || { id: 'unknown', label: 'неизвестный ключ', model: null }
 }
 
-const localKey = () => (useStore.getState().settings?.aiKey || '').trim()
+/** Ключи из настроек + миграция старого одиночного settings.aiKey. */
+export function storedKeys() {
+  const s = useStore.getState().settings || {}
+  const keys = { anthropic: '', gemini: '', openrouter: '', ...(s.aiKeys || {}) }
+  const legacy = (s.aiKey || '').trim()
+  if (legacy) {
+    const p = detectProvider(legacy)
+    if (p && p.id !== 'unknown' && !keys[p.id]) keys[p.id] = legacy
+  }
+  return keys
+}
+
+// порядок использования: качество → бесплатные
+const ORDER = ['anthropic', 'gemini', 'openrouter']
+
+/** Непустые ключи в порядке приоритета: [{ id, key }] */
+export function keyChain() {
+  const keys = storedKeys()
+  return ORDER.filter((id) => keys[id].trim()).map((id) => ({ id, key: keys[id].trim() }))
+}
 
 let statusCache = null // { hasKey, model } | { hasKey:false } | null
 
 /** Статус агента: null — функция недоступна (локальный запуск). */
 export async function agentStatus(force = false) {
-  const key = localKey()
-  if (key) {
-    const p = detectProvider(key)
-    if (p && p.id !== 'unknown')
-      return { ok: true, hasKey: true, provider: p.id, providerLabel: p.label + ' · ключ из браузера', model: p.model, local: true }
+  const chain = keyChain()
+  if (chain.length) {
+    const p = PROVIDERS.find((x) => x.id === chain[0].id)
+    return {
+      ok: true, hasKey: true, local: true,
+      provider: p.id,
+      providerLabel: p.label + ' · ключ из браузера',
+      model: p.model,
+      reserves: chain.length - 1,
+    }
   }
   if (statusCache && !force) return statusCache
   try {
@@ -44,29 +72,34 @@ export async function agentStatus(force = false) {
 }
 
 async function call(task, payload) {
-  try {
-    const key = localKey()
-    const r = await fetch(FN, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ task, ...(key ? { clientKey: key } : {}), ...payload }),
-    })
-    if (!r.ok) return null
-    const data = await r.json()
-    return data.ok ? data.result : null
-  } catch {
-    return null
+  const chain = keyChain()
+  // без локальных ключей — одна попытка на серверных env
+  const attempts = chain.length ? chain.map((c) => c.key) : [null]
+  for (const key of attempts) {
+    try {
+      const r = await fetch(FN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task, ...(key ? { clientKey: key } : {}), ...payload }),
+      })
+      if (!r.ok) continue
+      const data = await r.json()
+      if (data.ok) return data.result
+      if (data.reason === 'no_key') return null // ключей нет нигде — эвристика
+      // ошибка провайдера (исчерпан лимит?) — пробуем следующий ключ
+    } catch { /* сеть/функция — пробуем следующий */ }
   }
+  return null
 }
 
 /**
  * Проверка ключа реальным запросом к провайдеру.
- * keyOverride — проверить ключ ДО сохранения в настройки.
+ * keyOverride — проверить конкретный ключ ДО сохранения в настройки.
  * Возвращает ответ функции: { ok, pong?, providerLabel?, model?, error? }.
  */
 export async function pingAgent(keyOverride) {
   try {
-    const key = (keyOverride ?? localKey()).trim()
+    const key = (keyOverride ?? keyChain()[0]?.key ?? '').trim()
     const r = await fetch(FN, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

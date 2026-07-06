@@ -1049,6 +1049,28 @@ input[type="range"]::-webkit-slider-thumb {
 .icon-gold { color: var(--acc); }
 .icon-teal { color: var(--acc-2); }
 
+/* ---------- карточки ключей ИИ ---------- */
+.key-card {
+  border: 1px solid var(--stroke);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  margin-top: 12px;
+  background: rgba(3, 11, 20, 0.25);
+}
+.key-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--stroke);
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.key-badge.free { border-color: rgba(74, 222, 128, 0.4); color: var(--ok); }
+.key-badge.main { border-color: var(--stroke-bright); color: var(--acc); }
+
 .mt-16 { margin-top: 16px; }
 .mt-20 { margin-top: 20px; }
 .mb-16 { margin-bottom: 16px; }

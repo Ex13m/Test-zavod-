@@ -2,31 +2,89 @@ import { useEffect, useState } from 'react'
 import { useStore } from '../store'
 import { FRAMEWORKS, TONES } from '../engine/generator'
 import { LANGS } from '../engine/i18n'
-import { agentStatus, pingAgent, detectProvider } from '../engine/agent'
+import { agentStatus, pingAgent, detectProvider, storedKeys, keyChain } from '../engine/agent'
 import Icon from '../components/Icons'
 
-function AgentPanel() {
-  const { settings, setSettings, showToast } = useStore()
-  const [st, setSt] = useState(null)
-  const [draft, setDraft] = useState(settings.aiKey || '')
-  const [busy, setBusy] = useState(false)
-  useEffect(() => { agentStatus(true).then(setSt) }, [settings.aiKey])
-  const state = !st ? 'probe' : st.hasKey ? 'on' : st.offline ? 'offline' : 'nokey'
-  const saved = Boolean((settings.aiKey || '').trim())
+// ---------- Меню ключей ИИ: три провайдера, ссылки, инструкции ----------
+const KEY_PROVIDERS = [
+  {
+    id: 'gemini',
+    name: 'Gemini (Google)',
+    badge: 'бесплатно',
+    free: true,
+    prefix: 'AIza',
+    link: 'https://aistudio.google.com/apikey',
+    linkLabel: 'aistudio.google.com',
+    placeholder: 'AIza…',
+    info: [
+      '1. Откройте aistudio.google.com/apikey (хватит обычного Google-аккаунта).',
+      '2. Нажмите «Create API key» и скопируйте ключ — он начинается с AIza.',
+      '3. Вставьте сюда и нажмите «Сохранить и проверить».',
+      'Бесплатно: лимита хватает на сотни распознаваний в день. Модель gemini-2.5-flash видит фото и умеет искать в Google, когда завод изучает товар. Рекомендуем как основной ключ.',
+    ],
+  },
+  {
+    id: 'openrouter',
+    name: 'OpenRouter',
+    badge: 'бесплатные модели',
+    free: true,
+    prefix: 'sk-or-',
+    link: 'https://openrouter.ai/keys',
+    linkLabel: 'openrouter.ai',
+    placeholder: 'sk-or-…',
+    info: [
+      '1. Зарегистрируйтесь на openrouter.ai (почта или Google).',
+      '2. Меню Keys → «Create Key» — ключ начинается с sk-or-.',
+      '3. Вставьте сюда и нажмите «Сохранить и проверить».',
+      'Один ключ открывает десятки моделей; бесплатные помечены «:free». Без пополнения — около 50 запросов в день; если пополнить баланс на $10, лимит вырастает до 1000/день.',
+      'Заводу нужна модель со «зрением». По умолчанию используется google/gemini-2.0-flash-exp:free — видит фото и быстрая, ничего настраивать не нужно. Если важно точнее читать мелкий текст на упаковках — qwen/qwen2.5-vl-72b-instruct:free (медленнее). Чисто текстовые модели (deepseek и т.п.) для фото не годятся.',
+      'Лучшая роль OpenRouter — резерв: когда дневной лимит Gemini исчерпан, завод сам переключится на него.',
+    ],
+  },
+  {
+    id: 'anthropic',
+    name: 'Claude (Anthropic)',
+    badge: 'платно',
+    free: false,
+    prefix: 'sk-ant-',
+    link: 'https://console.anthropic.com/settings/keys',
+    linkLabel: 'console.anthropic.com',
+    placeholder: 'sk-ant-…',
+    info: [
+      '1. Зарегистрируйтесь на console.anthropic.com.',
+      '2. Settings → API Keys → «Create Key» — ключ начинается с sk-ant-.',
+      '3. В разделе Billing привяжите карту и пополните баланс (от $5) — без этого запросы не пройдут.',
+      'Платно: распознавание одного фото ≈ $0.02–0.05 (модель Opus 4.8). Зато максимум качества чтения постов, сайтов и фактов о товаре. Берите, когда бесплатных не хватает по качеству; для старта достаточно Gemini.',
+    ],
+  },
+]
 
-  const saveKey = async () => {
+function KeyCard({ p }) {
+  const { setSettings, showToast } = useStore()
+  const keys = storedKeys()
+  const saved = (keys[p.id] || '').trim()
+  const [draft, setDraft] = useState(saved)
+  const [busy, setBusy] = useState(false)
+  const [showInfo, setShowInfo] = useState(false)
+  const chain = keyChain()
+  const role = saved ? (chain[0]?.id === p.id ? 'основной' : 'резерв') : null
+
+  const writeKeys = (value) =>
+    setSettings({ aiKeys: { ...storedKeys(), [p.id]: value }, aiKey: '' })
+
+  const save = async () => {
     const key = draft.trim()
     if (!key) return showToast('Вставьте ключ в поле', '⚠')
-    const p = detectProvider(key)
-    if (!p || p.id === 'unknown') {
-      return showToast('Ключ не похож на Gemini (AIza…), OpenRouter (sk-or-…) или Claude (sk-ant-…)', '⚠')
+    const det = detectProvider(key)
+    if (det?.id !== p.id) {
+      return showToast(`Это не ключ ${p.name}: он должен начинаться с ${p.prefix}`, '⚠')
     }
     setBusy(true)
     const r = await pingAgent(key) // проверяем ДО сохранения
     setBusy(false)
     if (r?.ok) {
-      setSettings({ aiKey: key })
-      showToast(`Ключ работает: ${r.providerLabel || p.label}${r.model ? ` · ${r.model}` : ''}`, '✓')
+      writeKeys(key)
+      showToast(`Ключ ${p.name} работает${r.model ? ` · ${r.model}` : ''}`, '✓')
     } else if (r?.offline) {
       showToast('Функция недоступна (локальный запуск) — проверьте на деплое', '⚠')
     } else {
@@ -34,54 +92,87 @@ function AgentPanel() {
     }
   }
 
-  const dropKey = () => {
-    if (!confirm('Удалить ключ из этого браузера? Агент перейдёт на эвристику.')) return
-    setSettings({ aiKey: '' })
+  const drop = () => {
+    if (!confirm(`Удалить ключ ${p.name} из этого браузера?`)) return
+    writeKeys('')
     setDraft('')
-    showToast('Ключ удалён — работает эвристика', '✓')
+    showToast(`Ключ ${p.name} удалён`, '✓')
   }
 
   return (
-    <div className="panel mt-20">
-      <div className="panel-title"><Icon name="lens" size={14} className="icon-gold" /> ИИ-агент (распознавание по фото)</div>
-      {state === 'probe' && <div className="hint">Проверяем доступность агента…</div>}
-      {state === 'on' && (
-        <div className="pill-note" style={{ borderColor: 'rgba(74,222,128,0.4)', color: 'var(--ok)', background: 'rgba(74,222,128,0.07)' }}>
-          Агент активен · {st.providerLabel || 'Claude'}{st.model ? ` · ${st.model}` : ''} — распознавание по фото, изучение товара, чтение постов, анализ сайтов
+    <div className="key-card">
+      <div className="row" style={{ gap: 8 }}>
+        <b style={{ fontSize: 13.5 }}>{p.name}</b>
+        <span className={'key-badge' + (p.free ? ' free' : '')}>{p.badge}</span>
+        {role && <span className={'key-badge' + (role === 'основной' ? ' main' : '')}>{role}</span>}
+        <span className="spacer" />
+        <a className="btn sm ghost" href={p.link} target="_blank" rel="noreferrer">
+          <Icon name="external" size={13} /> Получить ключ
+        </a>
+        <button
+          className="btn sm ghost"
+          title="Как получить и зачем"
+          aria-label={`Инструкция ${p.name}`}
+          onClick={() => setShowInfo(!showInfo)}
+          style={showInfo ? { color: 'var(--acc)' } : undefined}
+        >
+          <Icon name="info" size={15} />
+        </button>
+      </div>
+      {showInfo && (
+        <div className="hint" style={{ lineHeight: 1.7, marginTop: 8 }}>
+          {p.info.map((line, i) => <div key={i} style={{ marginTop: i ? 4 : 0 }}>{line}</div>)}
         </div>
       )}
-      {state === 'nokey' && (
-        <div className="pill-note">Ключ не задан — работает резервная эвристика (тип угадывается по имени файла)</div>
-      )}
-      {state === 'offline' && (
-        <div className="hint">Локальный запуск — serverless-функции недоступны. Вставьте ключ и откройте деплой на Netlify.</div>
-      )}
-      <div className="field" style={{ marginTop: 12 }}>
-        <label>API-ключ (хранится только в этом браузере)</label>
+      <div className="row" style={{ marginTop: 10 }}>
         <input
           type="password"
-          placeholder="AIza… (Gemini) · sk-or-… (OpenRouter) · sk-ant-… (Claude)"
+          placeholder={p.placeholder}
           value={draft}
           onChange={(e) => setDraft(e.target.value.trim())}
           autoComplete="off"
+          style={{ flex: 1, minWidth: 160 }}
         />
-        <div className="row" style={{ marginTop: 10 }}>
-          <button className="btn sm" onClick={saveKey} disabled={busy}>
-            <Icon name="check" size={15} /> {busy ? 'Проверяю ключ…' : 'Сохранить и проверить'}
+        <button className="btn sm" onClick={save} disabled={busy}>
+          <Icon name="check" size={14} /> {busy ? 'Проверяю…' : 'Сохранить и проверить'}
+        </button>
+        {saved && (
+          <button className="btn sm danger" onClick={drop} disabled={busy} title="Удалить ключ">
+            <Icon name="trash" size={14} />
           </button>
-          {saved && (
-            <button className="btn sm danger" onClick={dropKey} disabled={busy}>
-              <Icon name="trash" size={15} /> Удалить ключ
-            </button>
-          )}
+        )}
+      </div>
+    </div>
+  )
+}
+
+function AgentPanel() {
+  const { settings } = useStore()
+  const [st, setSt] = useState(null)
+  useEffect(() => { agentStatus(true).then(setSt) }, [JSON.stringify(settings.aiKeys), settings.aiKey])
+  const state = !st ? 'probe' : st.hasKey ? 'on' : st.offline ? 'offline' : 'nokey'
+  return (
+    <div className="panel mt-20">
+      <div className="panel-title"><Icon name="lens" size={14} className="icon-gold" /> Ключи ИИ-агента</div>
+      {state === 'probe' && <div className="hint">Проверяем доступность агента…</div>}
+      {state === 'on' && (
+        <div className="pill-note" style={{ borderColor: 'rgba(74,222,128,0.4)', color: 'var(--ok)', background: 'rgba(74,222,128,0.07)' }}>
+          Агент активен · {st.providerLabel || 'Claude'}{st.model ? ` · ${st.model}` : ''}
+          {st.reserves > 0 ? ` · резервных ключей: ${st.reserves}` : ''}
         </div>
-        <div className="hint" style={{ lineHeight: 1.7, marginTop: 10 }}>
-          Бесплатный ключ: aistudio.google.com («Get API key», начинается с <b style={{ color: 'var(--acc)' }}>AIza</b>) или openrouter.ai
-          (<b style={{ color: 'var(--acc)' }}>sk-or-</b>). Платный Claude: console.anthropic.com (<b style={{ color: 'var(--acc)' }}>sk-ant-</b>).
-          «Сохранить и проверить» делает реальный тестовый запрос к провайдеру и подтверждает, что ключ работает.
-          Ключ живёт в вашем браузере и передаётся только вашей функции на Netlify. Альтернатива для команды —
-          переменные окружения на Netlify (docs/AI-AGENT.md).
-        </div>
+      )}
+      {state === 'nokey' && (
+        <div className="pill-note">Ключей нет — работает эвристика (тип угадывается по имени файла). Добавьте любой ключ ниже, бесплатного Gemini достаточно.</div>
+      )}
+      {state === 'offline' && (
+        <div className="hint">Локальный запуск — serverless-функции недоступны. Ключи проверяются на деплое Netlify.</div>
+      )}
+      {KEY_PROVIDERS.map((p) => <KeyCard key={p.id} p={p} />)}
+      <div className="hint" style={{ marginTop: 12, lineHeight: 1.7 }}>
+        Ключи хранятся только в этом браузере и передаются лишь вашей функции на Netlify. Можно сохранить несколько:
+        завод использует первый рабочий в порядке Claude → Gemini → OpenRouter и сам переключается на следующий,
+        если провайдер ответил ошибкой или исчерпан дневной лимит. Альтернатива для команды — переменные окружения
+        Netlify (docs/AI-AGENT.md), они имеют приоритет.
       </div>
     </div>
   )
