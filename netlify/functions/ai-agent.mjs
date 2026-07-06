@@ -40,8 +40,10 @@ const PROMPTS = {
  "type": "один из: ${PRODUCT_TYPES}",
  "name": "короткое торговое название с брендом и размером, как в каталоге (напр. 'Keitech Easy Shiner 4\\"' или 'Крючки Select Stonic #7')",
  "brand": "бренд или null",
+ "fish": "если по фото/упаковке/надписям понятно, под какую рыбу товар (trout/форелевая серия, карповые крючки и т.п.) — название рыбы по-русски в винительном падеже, как в фразе «ловить …» (напр. 'форель', 'судака', 'карпа'); если не видно — null",
  "details": "1 фраза: что видно на фото — расцветка, размер, особенности"
 }
+Внимательно читай текст на упаковке — серия и назначение чаще всего написаны там.
 Если товар не рыболовный — подбери ближайший тип по смыслу.`,
 
   style: `Ты — аналитик соцсетей. Перед тобой скриншоты постов магазина. Прочитай тексты на них и верни СТРОГО JSON без пояснений:
@@ -57,6 +59,16 @@ const PROMPTS = {
  "ctaStyle": "1 фраза: как посты зовут к действию",
  "brands": ["бренды, упомянутые в постах"]
 }`,
+
+  enrich: `Ты — эксперт-рыболов и товаровед. Изучи товар (по поиску в интернете, если он доступен, иначе по своим знаниям) и верни СТРОГО JSON без пояснений:
+{
+ "about": "1 фраза: что это за товар и чем известна серия",
+ "usage": "1-2 фразы: как и когда его применять на рыбалке (проводка, оснастка, условия)",
+ "fish": ["целевые рыбы, до 3, по-русски в винительном падеже, как в фразе «ловить …» (напр. 'форель', 'судака')"],
+ "facts": ["3-5 КОНКРЕТНЫХ фактов о товаре/серии: рабочие проводки, глубины, условия, сильные стороны — без воды и общих слов"],
+ "season": "когда товар работает лучше всего, 1 короткая фраза"
+}
+Пиши только то, что реально относится к этому товару/серии; не выдумывай характеристики.`,
 
   shop: `Ты — маркетинговый аналитик. Ниже — текст главной страницы интернет-магазина. Верни СТРОГО JSON без пояснений:
 {
@@ -79,7 +91,10 @@ const parseJSON = (text) => {
   return JSON.parse(m[0])
 }
 
-async function callClaude(apiKey, system, content, maxTokens = 700) {
+// opts.search — разрешить модели веб-поиск (Claude: server-tool
+// web_search, Gemini: grounding через google_search). OpenRouter
+// поиска не имеет — отвечает на знаниях модели.
+async function callClaude(apiKey, system, content, maxTokens = 700, opts = {}) {
   const blocks = content.map((c) =>
     c.img
       ? { type: 'image', source: { type: 'base64', media_type: c.img.mime, data: c.img.b64 } }
@@ -97,6 +112,7 @@ async function callClaude(apiKey, system, content, maxTokens = 700) {
       max_tokens: maxTokens,
       system,
       messages: [{ role: 'user', content: blocks }],
+      ...(opts.search ? { tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }] } : {}),
     }),
   })
   const data = await res.json()
@@ -104,7 +120,7 @@ async function callClaude(apiKey, system, content, maxTokens = 700) {
   return parseJSON((data.content || []).map((b) => b.text || '').join(''))
 }
 
-async function callGemini(apiKey, system, content, maxTokens = 700) {
+async function callGemini(apiKey, system, content, maxTokens = 700, opts = {}) {
   const parts = content.map((c) =>
     c.img ? { inline_data: { mime_type: c.img.mime, data: c.img.b64 } } : { text: c.text }
   )
@@ -116,7 +132,10 @@ async function callGemini(apiKey, system, content, maxTokens = 700) {
       body: JSON.stringify({
         system_instruction: { parts: [{ text: system }] },
         contents: [{ role: 'user', parts }],
-        generationConfig: { maxOutputTokens: maxTokens, responseMimeType: 'application/json' },
+        // с grounding-поиском JSON-режим недоступен — parseJSON вытащит объект из текста
+        ...(opts.search
+          ? { tools: [{ google_search: {} }], generationConfig: { maxOutputTokens: maxTokens } }
+          : { generationConfig: { maxOutputTokens: maxTokens, responseMimeType: 'application/json' } }),
       }),
     }
   )
@@ -192,18 +211,37 @@ export default async (req) => {
 
   let body
   try { body = await req.json() } catch { return json({ ok: false, error: 'Некорректный JSON' }, 400) }
-  const { task, images = [], url, clientKey } = body
+  const { task, images = [], url, clientKey, product } = body
   const provider = pickProvider(clientKey)
   if (!provider)
     return json(
       { ok: false, reason: 'no_key', error: 'Нет ключа: задайте в Netlify (ANTHROPIC_API_KEY / GEMINI_API_KEY / OPENROUTER_API_KEY) или вставьте ключ в Настройках завода' },
       200
     )
-  if (!PROMPTS[task]) return json({ ok: false, error: 'task должен быть product | style | shop' }, 400)
+
+  // ping — реальная проверка ключа: минимальный запрос к провайдеру
+  if (task === 'ping') {
+    try {
+      const r = await provider.call(provider.key, 'Ты — проверка связи.', [{ text: 'Верни СТРОГО JSON: {"pong":true}' }], 60)
+      return json({ ok: true, pong: Boolean(r?.pong), provider: provider.id, providerLabel: provider.label, model: provider.model })
+    } catch (e) {
+      return json({ ok: false, reason: 'bad_key', provider: provider.id, error: String(e.message || e) }, 200)
+    }
+  }
+
+  if (!PROMPTS[task]) return json({ ok: false, error: 'task должен быть product | style | shop | enrich | ping' }, 400)
 
   try {
     let content = []
-    if (task === 'shop') {
+    let opts = {}
+    if (task === 'enrich') {
+      const name = String(product?.name || '').slice(0, 120)
+      if (!name) return json({ ok: false, error: 'Нужен product.name' }, 400)
+      const brand = String(product?.brand || '').slice(0, 60)
+      const ptype = String(product?.type || '').slice(0, 30)
+      content = [{ text: `Товар: ${name}${brand ? `\nБренд: ${brand}` : ''}${ptype ? `\nКатегория: ${ptype}` : ''}\n\nИзучи этот товар и верни JSON по инструкции.` }]
+      opts = { search: true }
+    } else if (task === 'shop') {
       if (!url) return json({ ok: false, error: 'Нужен url магазина' }, 400)
       const target = /^https?:\/\//.test(url) ? url : 'https://' + url
       const page = await fetch(target, {
@@ -227,7 +265,14 @@ export default async (req) => {
       content = [...blocks, { text: 'Проанализируй по инструкции и верни JSON.' }]
     }
 
-    const result = await provider.call(provider.key, PROMPTS[task], content)
+    let result
+    try {
+      result = await provider.call(provider.key, PROMPTS[task], content, task === 'enrich' ? 900 : 700, opts)
+    } catch (e) {
+      // веб-поиск может быть недоступен для ключа/модели — пробуем без него
+      if (!opts.search) throw e
+      result = await provider.call(provider.key, PROMPTS[task], content, 900)
+    }
     return json({ ok: true, task, result, provider: provider.id, model: provider.model })
   } catch (e) {
     return json({ ok: false, error: String(e.message || e) }, 200)

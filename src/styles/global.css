@@ -7,7 +7,7 @@
 :root {
   --bg-abyss: #060a12;
   --bg-deep: #0b1322;
-  --bg-panel: rgba(15, 23, 39, 0.30);
+  --bg-panel: rgba(15, 23, 39, 0.22);
   --bg-panel-solid: #101827;
   --bg-elevated: rgba(22, 32, 52, 0.48);
   --stroke: rgba(213, 228, 245, 0.10);
@@ -34,6 +34,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { height: 100%; }
+html { -webkit-tap-highlight-color: transparent; }
 
 body {
   font-family: var(--font-body);
@@ -303,7 +304,8 @@ body {
   border: 1px solid var(--stroke);
   border-radius: var(--r-lg);
   padding: 20px 22px;
-  backdrop-filter: blur(14px);
+  /* лёгкое стекло: фон и рыбы читаются сквозь панель, а не тонут в blur */
+  backdrop-filter: blur(4px) saturate(1.15);
   position: relative;
   box-shadow: var(--shadow-glow);
 }
@@ -863,8 +865,13 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   filter: drop-shadow(0 8px 20px rgba(2, 6, 14, 0.6));
   transition: transform 0.25s var(--ease-spring);
+  -webkit-tap-highlight-color: transparent;
 }
 .assistant-toggle:hover { transform: scale(1.06); }
+/* без прямоугольной подсветки тапа вокруг прозрачного стикера,
+   но с видимой рамкой при навигации с клавиатуры */
+.assistant-toggle:focus { outline: none; }
+.assistant-toggle:focus-visible { outline: 2px solid var(--acc); border-radius: 14px; }
 .captain { animation: bob 4.5s ease-in-out infinite; overflow: visible; }
 .captain .cap-fin { transform-box: fill-box; transform-origin: 80% 12%; animation: fin-wag 2.2s ease-in-out infinite; }
 @keyframes fin-wag { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(16deg); } }
@@ -884,7 +891,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid var(--stroke-bright);
   border-radius: var(--r-lg);
   padding: 14px 16px;
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(6px);
   box-shadow: 0 16px 44px rgba(2, 6, 14, 0.6);
   animation: toast-in 0.3s var(--ease-spring);
   position: relative;

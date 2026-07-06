@@ -166,6 +166,9 @@ export function generatePost(p) {
     shortSentences: p.styleProfile?.punch ?? 0.5,
   }
 
+  // знания о конкретном товаре (ИИ изучил его в интернете) важнее
+  // шаблонов типа: реальная рыба с фото/упаковки, факты вместо общих фраз
+  const info = p.lure.info
   const ctx = {
     type,
     lname: type.name.toLowerCase(),
@@ -175,11 +178,11 @@ export function generatePost(p) {
     solves: type.plural ? 'решают' : 'решает',
     isProduct: Boolean(PRODUCT_TYPES[type.id]),
     title: p.lure.name,
-    fish: pick(type.fish, rnd),
-    season: pick(type.seasons, rnd),
-    benefit: pick(type.benefits, rnd),
+    fish: p.lure.fish || (info?.fish?.length ? pick(info.fish, rnd) : pick(type.fish, rnd)),
+    season: info?.season || pick(type.seasons, rnd),
+    benefit: info?.facts?.length ? pick(info.facts, rnd) : pick(type.benefits, rnd),
     pain: pick(type.pains, rnd),
-    proof: pick(type.proofs, rnd),
+    proof: info?.usage || pick(type.proofs, rnd),
     url: withUtm(p.settings?.siteUrl || 'https://example.com', p.settings, p.framework),
   }
 

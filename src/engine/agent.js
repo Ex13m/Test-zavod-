@@ -59,8 +59,31 @@ async function call(task, payload) {
   }
 }
 
-/** Фото товара → { type, name, brand, details } | null */
+/**
+ * Проверка ключа реальным запросом к провайдеру.
+ * keyOverride — проверить ключ ДО сохранения в настройки.
+ * Возвращает ответ функции: { ok, pong?, providerLabel?, model?, error? }.
+ */
+export async function pingAgent(keyOverride) {
+  try {
+    const key = (keyOverride ?? localKey()).trim()
+    const r = await fetch(FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ task: 'ping', ...(key ? { clientKey: key } : {}) }),
+    })
+    if (!r.ok) return { ok: false, error: `HTTP ${r.status}` }
+    return await r.json()
+  } catch (e) {
+    return { ok: false, offline: true, error: 'Функция недоступна (локальный запуск?)' }
+  }
+}
+
+/** Фото товара → { type, name, brand, fish, details } | null */
 export const classifyProduct = (dataUrl) => call('product', { images: [dataUrl] })
+
+/** Изучение товара в интернете → { about, usage, fish[], facts[], season } | null */
+export const enrichProduct = (product) => call('enrich', { product })
 
 /** Скрины постов → реальный профиль стиля | null */
 export const analyzeStyleAI = (dataUrls) => call('style', { images: dataUrls.slice(0, 6) })

@@ -2,22 +2,52 @@ import { useEffect, useState } from 'react'
 import { useStore } from '../store'
 import { FRAMEWORKS, TONES } from '../engine/generator'
 import { LANGS } from '../engine/i18n'
-import { agentStatus } from '../engine/agent'
+import { agentStatus, pingAgent, detectProvider } from '../engine/agent'
 import Icon from '../components/Icons'
 
 function AgentPanel() {
-  const { settings, setSettings } = useStore()
+  const { settings, setSettings, showToast } = useStore()
   const [st, setSt] = useState(null)
+  const [draft, setDraft] = useState(settings.aiKey || '')
+  const [busy, setBusy] = useState(false)
   useEffect(() => { agentStatus(true).then(setSt) }, [settings.aiKey])
   const state = !st ? 'probe' : st.hasKey ? 'on' : st.offline ? 'offline' : 'nokey'
-  const badKey = Boolean((settings.aiKey || '').trim()) && !(st && st.hasKey && st.local)
+  const saved = Boolean((settings.aiKey || '').trim())
+
+  const saveKey = async () => {
+    const key = draft.trim()
+    if (!key) return showToast('Вставьте ключ в поле', '⚠')
+    const p = detectProvider(key)
+    if (!p || p.id === 'unknown') {
+      return showToast('Ключ не похож на Gemini (AIza…), OpenRouter (sk-or-…) или Claude (sk-ant-…)', '⚠')
+    }
+    setBusy(true)
+    const r = await pingAgent(key) // проверяем ДО сохранения
+    setBusy(false)
+    if (r?.ok) {
+      setSettings({ aiKey: key })
+      showToast(`Ключ работает: ${r.providerLabel || p.label}${r.model ? ` · ${r.model}` : ''}`, '✓')
+    } else if (r?.offline) {
+      showToast('Функция недоступна (локальный запуск) — проверьте на деплое', '⚠')
+    } else {
+      showToast(`Ключ не принят: ${String(r?.error || 'ошибка провайдера').slice(0, 120)}`, '⚠')
+    }
+  }
+
+  const dropKey = () => {
+    if (!confirm('Удалить ключ из этого браузера? Агент перейдёт на эвристику.')) return
+    setSettings({ aiKey: '' })
+    setDraft('')
+    showToast('Ключ удалён — работает эвристика', '✓')
+  }
+
   return (
     <div className="panel mt-20">
       <div className="panel-title"><Icon name="lens" size={14} className="icon-gold" /> ИИ-агент (распознавание по фото)</div>
       {state === 'probe' && <div className="hint">Проверяем доступность агента…</div>}
       {state === 'on' && (
         <div className="pill-note" style={{ borderColor: 'rgba(74,222,128,0.4)', color: 'var(--ok)', background: 'rgba(74,222,128,0.07)' }}>
-          Агент активен · {st.providerLabel || 'Claude'}{st.model ? ` · ${st.model}` : ''} — распознавание товаров по фото, чтение постов, анализ сайтов
+          Агент активен · {st.providerLabel || 'Claude'}{st.model ? ` · ${st.model}` : ''} — распознавание по фото, изучение товара, чтение постов, анализ сайтов
         </div>
       )}
       {state === 'nokey' && (
@@ -31,21 +61,26 @@ function AgentPanel() {
         <input
           type="password"
           placeholder="AIza… (Gemini) · sk-or-… (OpenRouter) · sk-ant-… (Claude)"
-          value={settings.aiKey || ''}
-          onChange={(e) => setSettings({ aiKey: e.target.value.trim() })}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value.trim())}
           autoComplete="off"
         />
-        {badKey && (
-          <div className="hint" style={{ color: 'var(--danger)' }}>
-            Ключ не похож ни на один провайдер: должен начинаться с AIza (Gemini), sk-or- (OpenRouter) или sk-ant- (Claude).
-          </div>
-        )}
-        <div className="hint" style={{ lineHeight: 1.7 }}>
+        <div className="row" style={{ marginTop: 10 }}>
+          <button className="btn sm" onClick={saveKey} disabled={busy}>
+            <Icon name="check" size={15} /> {busy ? 'Проверяю ключ…' : 'Сохранить и проверить'}
+          </button>
+          {saved && (
+            <button className="btn sm danger" onClick={dropKey} disabled={busy}>
+              <Icon name="trash" size={15} /> Удалить ключ
+            </button>
+          )}
+        </div>
+        <div className="hint" style={{ lineHeight: 1.7, marginTop: 10 }}>
           Бесплатный ключ: aistudio.google.com («Get API key», начинается с <b style={{ color: 'var(--acc)' }}>AIza</b>) или openrouter.ai
           (<b style={{ color: 'var(--acc)' }}>sk-or-</b>). Платный Claude: console.anthropic.com (<b style={{ color: 'var(--acc)' }}>sk-ant-</b>).
-          Вставили — агент включается сразу, никаких настроек Netlify не нужно. Ключ живёт в вашем браузере
-          и передаётся только вашей функции на Netlify. Альтернатива для команды — переменные окружения
-          на Netlify (docs/AI-AGENT.md).
+          «Сохранить и проверить» делает реальный тестовый запрос к провайдеру и подтверждает, что ключ работает.
+          Ключ живёт в вашем браузере и передаётся только вашей функции на Netlify. Альтернатива для команды —
+          переменные окружения на Netlify (docs/AI-AGENT.md).
         </div>
       </div>
     </div>
