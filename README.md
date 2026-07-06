@@ -52,12 +52,35 @@ src/
     styleAnalyzer.js   # эвристика копирования стиля по скринам (v1)
     distribution.js    # выходы: Telegram-прокси, вебхук автопостинга
     imageUtil.js       # сжатие загружаемых фото
+  art.js           # реестр арта Higgsfield: цепочки источников (см. раздел ниже)
   components/      # FishCanvas (подводная сцена), Dropzone, hooks
   views/           # Пульт · Приманки · Конвейер · Стиль · История · Дистрибуция · Настройки
   store.js         # zustand + persist; картинки в IndexedDB
 netlify/functions/ # telegram-post.mjs — CORS-прокси к Bot API
 docs/              # SPEC.md · ROADMAP.md
 ```
+
+## Арт из Higgsfield
+
+Весь фирменный арт (подводный фон, Капитан Окунь, силуэты 5 рыб,
+светящаяся приманка) сгенерирован в [Higgsfield](https://higgsfield.ai):
+фон — Soul Location, Капитан — Nano Banana, силуэты — Recraft V4.1 vector.
+Фон у Капитана и силуэтов **вырезан ремувером Higgsfield** — это
+прозрачные PNG-стикеры, они ложатся на любую тему без blend-хаков.
+
+Каждая картинка в `src/art.js` — цепочка источников, компонент
+`SmartImg` перебирает её по `onError`:
+
+1. локальный файл `public/art/<имя>` (в репозитории его нет);
+2. прозрачный PNG на CDN Higgsfield;
+3. встроенный SVG-фолбэк (рисованный Капитан, векторные силуэты)
+   или градиенты — приложение работает даже полностью офлайн.
+
+Чтобы не зависеть от CDN, скачайте файлы по ссылкам из `src/art.js`
+в `public/art/` под именами из первого источника (`captain.png`,
+`sil-pike.png`, `sil-perch.png`, `sil-zander.png`, `sil-asp.png`,
+`sil-trout.png`, `bg.jpg`, `lure-glow.png`) — локальная копия
+подхватится сама, первым приоритетом.
 
 ## Документация
 

@@ -7,14 +7,14 @@ import { ART } from '../art'
 import SmartImg from './SmartImg'
 
 // Капитан Окунь: растровый маскот из Higgsfield (Nano Banana),
-// тёмный фон растворяется через mix-blend-mode; при недоступности
-// арта — рисованный SVG-фолбэк ниже.
+// фон вырезан ремувером — настоящий прозрачный стикер, работает
+// на любой теме; при недоступности арта — SVG-фолбэк ниже.
 export function Captain({ size = 84 }) {
   return (
     <SmartImg
       srcs={ART.captain}
       alt="Капитан Окунь"
-      className="captain art-blend"
+      className="captain"
       style={{ width: size, height: size, objectFit: 'contain' }}
       fallback={<CaptainSvg size={size} />}
     />

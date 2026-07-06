@@ -1041,7 +1041,6 @@ input[type="range"]::-webkit-slider-thumb {
 .conv-stage.done .cs-icon .icon { stroke: currentColor; filter: none; }
 .icon-gold { color: var(--acc); }
 .icon-teal { color: var(--acc-2); }
-.art-blend { mix-blend-mode: lighten; }
 
 .mt-16 { margin-top: 16px; }
 .mt-20 { margin-top: 20px; }
