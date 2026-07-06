@@ -1,8 +1,8 @@
 // ============================================================
-// Многослойный подводный фон: рыбы (щука, судак, окунь, жерех),
-// сгенерированные Higgsfield (Recraft V4.1 vector), плывут в
-// 3 параллакс-слоях с разными скоростями/масштабами/blur;
-// на каждом слое — плавно покачивающиеся водоросли.
+// Многослойный подводный фон: рыбы (щука, судак, окунь, жерех,
+// форель) плывут в 5 параллакс-слоях глубины с разными
+// скоростями/масштабами/направлениями/blur; на слоях — плавно
+// покачивающиеся водоросли.
 // ============================================================
 import { ART } from '../art'
 import SmartImg from './SmartImg'
@@ -78,14 +78,30 @@ function WeedCluster({ left, h, sway, delay, blades = 3 }) {
   )
 }
 
-// Конфигурация слоёв: дальний → ближний
+// Конфигурация слоёв: самый дальний → самый ближний.
+// 5 слоёв глубины: чем ближе, тем крупнее, быстрее, контрастнее
+// и меньше blur; рыбы плывут в обе стороны с разными скоростями.
 const LAYERS = [
+  {
+    z: 'abyss', blur: 3, opacity: 0.08, color: '#b6cde2',
+    fish: [
+      { kind: 'zander', top: '10%', dur: '140s', delay: '-90s', scale: 0.3, dir: 'ltr', drift: '12s' },
+      { kind: 'trout', top: '30%', dur: '125s', delay: '-40s', scale: 0.34, dir: 'rtl', drift: '13s' },
+      { kind: 'asp', top: '52%', dur: '135s', delay: '-110s', scale: 0.3, dir: 'ltr', drift: '11s' },
+      { kind: 'perch', top: '68%', dur: '118s', delay: '-25s', scale: 0.36, dir: 'rtl', drift: '12s' },
+    ],
+    weeds: [
+      { left: '24%', h: 60, sway: '12s', delay: '-4s', blades: 2 },
+      { left: '60%', h: 70, sway: '13s', delay: '-8s', blades: 2 },
+    ],
+  },
   {
     z: 'far', blur: 2, opacity: 0.12, color: '#a8c4dc',
     fish: [
       { kind: 'perch', top: '16%', dur: '95s', delay: '-30s', scale: 0.45, dir: 'ltr', drift: '9s' },
       { kind: 'zander', top: '38%', dur: '110s', delay: '-70s', scale: 0.55, dir: 'ltr', drift: '11s' },
       { kind: 'asp', top: '8%', dur: '120s', delay: '-15s', scale: 0.4, dir: 'rtl', drift: '10s' },
+      { kind: 'pike', top: '60%', dur: '100s', delay: '-55s', scale: 0.5, dir: 'rtl', drift: '10s' },
     ],
     weeds: [
       { left: '6%', h: 90, sway: '9s', delay: '0s' },
@@ -99,6 +115,7 @@ const LAYERS = [
       { kind: 'zander', top: '26%', dur: '62s', delay: '-20s', scale: 0.85, dir: 'rtl', drift: '8s' },
       { kind: 'asp', top: '58%', dur: '74s', delay: '-48s', scale: 0.75, dir: 'rtl', drift: '7s' },
       { kind: 'trout', top: '70%', dur: '58s', delay: '-10s', scale: 0.7, dir: 'ltr', drift: '9s' },
+      { kind: 'perch', top: '46%', dur: '68s', delay: '-36s', scale: 0.8, dir: 'ltr', drift: '8s' },
     ],
     weeds: [
       { left: '16%', h: 140, sway: '8s', delay: '-2s' },
@@ -111,6 +128,7 @@ const LAYERS = [
     fish: [
       { kind: 'pike', top: '44%', dur: '38s', delay: '-12s', scale: 1.45, dir: 'ltr', drift: '6s' },
       { kind: 'trout', top: '78%', dur: '46s', delay: '-30s', scale: 1.15, dir: 'rtl', drift: '7s' },
+      { kind: 'zander', top: '12%', dur: '52s', delay: '-40s', scale: 1.05, dir: 'rtl', drift: '6.5s' },
     ],
     weeds: [
       { left: '-2%', h: 220, sway: '7s', delay: '0s' },
@@ -118,6 +136,14 @@ const LAYERS = [
       { left: '64%', h: 200, sway: '8s', delay: '-2s' },
       { left: '93%', h: 240, sway: '7.5s', delay: '-5s' },
     ],
+  },
+  {
+    z: 'front', blur: 0, opacity: 0.26, color: '#6f95b8',
+    fish: [
+      { kind: 'asp', top: '30%', dur: '30s', delay: '-8s', scale: 1.6, dir: 'rtl', drift: '5.5s' },
+      { kind: 'perch', top: '86%', dur: '34s', delay: '-22s', scale: 1.3, dir: 'ltr', drift: '5s' },
+    ],
+    weeds: [],
   },
 ]
 
