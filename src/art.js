@@ -24,28 +24,29 @@ export const ART = {
     '/art/lure-glow.png',
     CDN + 'hf_20260705_225028_e9cb55e4-58a7-4b6c-b3bc-a58b9487c505.png',
   ],
-  // монолитные силуэты рыб (Recraft V4.1 vector → background remover):
-  // прозрачные PNG-стикеры, у каждого из 5 видов — свой силуэт
+  // монолитные силуэты рыб (GPT Image 2, анатомия по атласу →
+  // background remover): прозрачные PNG-стикеры, у каждого из
+  // 5 видов — свой силуэт
   silhouettes: {
     pike: [
       '/art/sil-pike.png',
-      CDN + 'hf_20260706_000830_4d75919f-b17f-4777-8b9a-07d736384c9f.png',
+      CDN + 'hf_20260706_002637_3ca0bdc1-88b6-4f65-92d4-e47badb75880.png',
     ],
     perch: [
       '/art/sil-perch.png',
-      CDN + 'hf_20260706_000830_1ae698de-5efe-4d4a-a8f6-c9b853f4035d.png',
+      CDN + 'hf_20260706_002638_2eea23b5-657e-41cb-98c9-43c12a7e8d9a.png',
     ],
     zander: [
       '/art/sil-zander.png',
-      CDN + 'hf_20260706_000902_37ce2beb-1451-43be-a072-96e3f435e601.png',
+      CDN + 'hf_20260706_002639_545f62a9-df45-4054-abc5-00e72179b0f6.png',
     ],
     asp: [
       '/art/sil-asp.png',
-      CDN + 'hf_20260706_000902_154fcd5b-745c-452e-bd2b-f0359fef89b1.png',
+      CDN + 'hf_20260706_002640_90f3d169-2501-46f2-b12d-58606e881b17.png',
     ],
     trout: [
       '/art/sil-trout.png',
-      CDN + 'hf_20260706_000831_7cc451a6-3994-4915-ab0d-8dbac1dbf37b.png',
+      CDN + 'hf_20260706_002641_1362146e-9519-48a8-a8f3-531186d2860e.png',
     ],
   },
 }

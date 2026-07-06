@@ -1,10 +1,18 @@
 // Единая точка контроля версий приложения.
 // Обновляется вместе с package.json и CHANGELOG.md при каждом релизе.
-export const APP_VERSION = '0.11.2'
+export const APP_VERSION = '0.11.3'
 export const APP_DATE = '06.07.2026'
 
 // Краткая история для окна «О версии» (полная — CHANGELOG.md в репозитории)
 export const VERSION_HISTORY = [
+  {
+    v: '0.11.3',
+    title: 'Анатомичные силуэты (GPT Image 2)',
+    items: [
+      'Все 5 силуэтов рыб перегенерированы в GPT Image 2 по анатомии атласа — вместо кривых иконок Recraft',
+      'Фон срезан ремувером Higgsfield — стикеры остались прозрачными',
+    ],
+  },
   {
     v: '0.11.2',
     title: 'Прозрачные стикеры Higgsfield',
